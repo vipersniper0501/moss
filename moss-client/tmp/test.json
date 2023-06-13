@@ -1,0 +1,10 @@
+{
+    "server": "127.0.0.1",
+    "files": [
+        {"name": "neovim", "location": "/bin/nvim"},
+        {"name": "nano", "location": "/bin/nano"}
+    ],
+    "valid_users": ["viper"],
+    "invalid_users": ["jake"]
+
+}
