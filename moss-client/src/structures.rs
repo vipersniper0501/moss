@@ -1,19 +1,49 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 
 #[derive(Deserialize, Debug)]
 pub struct MossData {
-    server: String,
-    files: Vec<MossFileData>,
-    valid_users: Vec<String>,
-    invalid_users: Vec<String>
+    pub server: String,
+    pub approved_files: Vec<MossFileData>,
+    pub invalid_files: Vec<MossFileData>,
+    pub valid_users: Vec<String>,
+    pub invalid_users: Vec<String>
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Default)]
 pub struct MossFileData {
-    name: String, 
-    location: String
+    pub name: String, 
+    pub location: String
 }
+
+
+#[derive(Serialize, Debug, Default)]
+pub struct MossResults {
+    pub approved_files: Vec<MossFilesResults>,
+    pub invalid_files: Vec<MossFilesResults>,
+    pub valid_users: Vec<bool>,
+    pub invalid_users: Vec<bool>
+}
+
+impl MossResults {
+
+    pub fn new() -> Self {
+        Self::default()
+    }
+}
+
+#[derive(Serialize, Debug)]
+pub struct MossFilesResults {
+    pub name: String,
+    pub status: bool
+}
+
+impl MossFilesResults {
+    pub fn new(n: String, s: bool) -> Self {
+        Self { name: n, status: s }
+    }
+}
+
 
 
 // Need to figure out return structure for server...
