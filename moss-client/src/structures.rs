@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 
 #[derive(Deserialize, Debug)]
-struct MossData {
+pub struct MossData {
     server: String,
     files: Vec<MossFileData>,
     valid_users: Vec<String>,
@@ -10,7 +10,7 @@ struct MossData {
 }
 
 #[derive(Deserialize, Debug)]
-struct MossFileData {
+pub struct MossFileData {
     name: String, 
     location: String
 }
