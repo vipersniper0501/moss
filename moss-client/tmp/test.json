@@ -1,8 +1,12 @@
 {
     "server": "127.0.0.1",
-    "files": [
+    "approved_files": [
         {"name": "neovim", "location": "/bin/nvim"},
+        {"name": "notfound", "location": "/bin/notfound"},
         {"name": "nano", "location": "/bin/nano"}
+    ],
+    "invalid_files": [
+        {"name": "passwords", "location": "/mnt/c/dev/passwords"}
     ],
     "valid_users": ["viper"],
     "invalid_users": ["jake"]
