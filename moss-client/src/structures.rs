@@ -59,9 +59,9 @@ mod tests {
         let input = fs::File::open("tmp/test.json").expect("No file found");
         let deserialized_data: MossData = serde_json::from_reader(input).unwrap();
         assert_eq!(deserialized_data.server, "127.0.0.1");
-        assert_eq!(deserialized_data.files.len(), 2);
-        assert_eq!(deserialized_data.files[0].name, "neovim");
-        assert_eq!(deserialized_data.files[1].location, "/bin/nano");
+        assert_eq!(deserialized_data.approved_files.len(), 3);
+        assert_eq!(deserialized_data.approved_files[0].name, "neovim");
+        assert_eq!(deserialized_data.approved_files[2].location, "/bin/nano");
         assert_eq!(deserialized_data.valid_users[0], "viper");
         assert_eq!(deserialized_data.invalid_users[0], "jake");
         
