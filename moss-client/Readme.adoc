@@ -1,0 +1,16 @@
+
+== Usage
+
+There are two different ways of using the moss-client. Local mode and remote mode. Local mode allows you to use the moss-client without the need for a remote server. This is mainly to be used for quick iterations and development of different configs. Anything to be used for an actual deployment in a competition environment or production environment in general should make use of the remote mode which hosts the configs on a remote server, preventing users or prying eyes from determining what is being monitored.
+
+=== Local Mode
+
+To use moss-client in local mode, run the following commands: 
+
+`moss-client -L <path to local config>`
+
+=== Remote Mode
+
+To use moss-client in remote mode (it connects to a remote instance of moss-server to retrieve it config), run the following commands:
+
+`moss-client -R <IP/Url of remote server>`
