@@ -1,24 +1,36 @@
 
-mod structures;
-mod linux;
+use std::fs;
+
+pub mod structures;
+pub mod linux;
+
+use structures::*;
+use linux::*;
 
 /// Gets config from a local file then runs the perform_checks
 /// function to begin
 fn local_mode(path: &str) {
+    let path = fs::File::open(path).expect("Config file not found.");
+    let config_data: MossData = serde_json::from_reader(path).unwrap();
 
+    loop {
+        let result_data: MossResults = perform_checks(&config_data);
+        println!("{:#?}", result_data);
+        todo!();
+    }
 }
 
 /// Gets config from a remote server then runs the perform_checks
 /// function to begin
 fn remote_mode(address: &str) {
-
+    todo!()
 }
 
 fn print_usage() {
     println!("Usage:\tmoss-client [-L | --local] <path to local config>\n\tOr\n\tmoss-client [-R | --remote] <IP/Url of remote server>");
 }
 
-/// Attempts to form connection with server.
+/// Remote Mode attempts to form connection with server.
 /// Connection Fails:
 ///     Exit and report failure
 /// Connection Succeeds: 
@@ -34,6 +46,7 @@ fn main() {
         std::process::exit(1);
     } 
 
+    // Determine mode program should run in
     let mode = match std::env::args().nth(1) {
         Some(x) => x,
         None => {
@@ -44,6 +57,10 @@ fn main() {
         },
     };
 
+    // Arguments for the mode
+    // Might want to move this into the match mode part to ensure correct
+    // types of arguments. (i.e a path is actual a path, an URL/IP is actually
+    // valid)
     let mode_argument = match std::env::args().nth(2) {
         Some(x) => x,
         None => {
