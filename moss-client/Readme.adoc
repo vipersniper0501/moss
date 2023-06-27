@@ -14,3 +14,39 @@ To use moss-client in local mode, run the following commands:
 To use moss-client in remote mode (it connects to a remote instance of moss-server to retrieve it config), run the following commands:
 
 `moss-client -R <IP/Url of remote server>`
+
+== Config JSON Spec
+
+The following is a template for a config:
+
+```JSON
+{
+    "server": "127.0.0.1",
+    "approved_files": [
+        {"name": "neovim", "location": "/bin/nvim"},
+        {"name": "notfound", "location": "/bin/notfound"},
+        {"name": "nano", "location": "/bin/nano"}
+    ],
+    "invalid_files": [
+        {"name": "passwords", "location": "/mnt/c/dev/SuperSensitivePasswords.txt"}
+    ],
+    "valid_users": ["viper"],
+    "invalid_users": ["jake"]
+}
+```
+
+Note: The values for each of the top level fields can be left empty, but they 
+must all be there when sent to the client or server. For example you can't leave
+out the `"invalid_users"` field. 
+
+=== Break down of spec
+
+==== "server"
+
+==== "approved_files"
+
+==== "invalid_files"
+
+==== "valid_users"
+
+==== "invalid_users"
