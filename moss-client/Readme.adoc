@@ -1,7 +1,13 @@
 
 == Usage
 
-There are two different ways of using the moss-client. Local mode and remote mode. Local mode allows you to use the moss-client without the need for a remote server. This is mainly to be used for quick iterations and development of different configs. Anything to be used for an actual deployment in a competition environment or production environment in general should make use of the remote mode which hosts the configs on a remote server, preventing users or prying eyes from determining what is being monitored.
+There are two different ways of using the moss-client. Local mode and remote 
+mode. Local mode allows you to use the moss-client without the need for a 
+remote server. This is mainly to be used for quick iterations and development 
+of different configs. Anything to be used for an actual deployment in a 
+competition environment or production environment in general should make use of
+the remote mode which hosts the configs on a remote server, preventing users or
+prying eyes from determining what is being monitored.
 
 === Local Mode
 
@@ -11,7 +17,8 @@ To use moss-client in local mode, run the following commands:
 
 === Remote Mode
 
-To use moss-client in remote mode (it connects to a remote instance of moss-server to retrieve it config), run the following commands:
+To use moss-client in remote mode (it connects to a remote instance of 
+moss-server to retrieve it config), run the following commands:
 
 `moss-client -R <IP/Url of remote server>`
 
@@ -39,19 +46,30 @@ Note: The values for each of the top level fields can be left empty, but they
 must all be there when sent to the client or server. For example you can't leave
 out the `"invalid_users"` field. 
 
-=== Break down of spec
+=== Break down of config spec
 
-==== "server"
+[cols="1,1"]
+|===
+|Field |Description
 
-The server field holds the url or ip address of the server to pull the config
+|"server"
+|The server field holds the url or ip address of the server to pull the config
 from.
 
-==== "approved_files"
+|"approved_files"
+|A list of files' names and locations. The locations will be checked to determine
+if a file exists at a location.
+
+|"invalid_files"
+|A list of files' names and locations. The locations will be checked to determine
+if a file does not exist at a location.
+
+|"valid_users"
+|A list of users that are allowed to be on a system.
+
+|"invalid_users"
+|A list of users that are not allowed to be on a system.
+
+|===
 
 
-
-==== "invalid_files"
-
-==== "valid_users"
-
-==== "invalid_users"
