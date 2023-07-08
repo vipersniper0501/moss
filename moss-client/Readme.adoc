@@ -43,7 +43,12 @@ out the `"invalid_users"` field.
 
 ==== "server"
 
+The server field holds the url or ip address of the server to pull the config
+from.
+
 ==== "approved_files"
+
+
 
 ==== "invalid_files"
 
