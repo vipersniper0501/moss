@@ -44,7 +44,7 @@ The following is a template for a config:
 
 Note: The values for each of the top level fields can be left empty, but they 
 must all be there when sent to the client or server. For example you can't leave
-out the `"invalid_users"` field. 
+out the `"invalid_users"` field. It would just be `"invalid_users: []"`. 
 
 === Break down of config spec
 

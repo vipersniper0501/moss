@@ -27,7 +27,8 @@ fn remote_mode(address: &str) {
 }
 
 fn print_usage() {
-    println!("Usage:\tmoss-client [-L | --local] <path to local config>\n\tOr\n\tmoss-client [-R | --remote] <IP/Url of remote server>");
+    println!("Usage:\tmoss-client [-L | --local] <path to local config>\n\t
+        Or\n\tmoss-client [-R | --remote] <IP/Url of remote server>");
 }
 
 /// Remote Mode attempts to form connection with server.
