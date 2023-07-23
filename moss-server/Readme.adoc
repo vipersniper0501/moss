@@ -1,0 +1,11 @@
+= Plan
+
+Ideal setup for the server is the following: Host website for user/admin to 
+identify what they want monitored and what machines on the network are allowed to 
+pull the config from the server. All the clients will be pointed to this server
+to the pull the config that will be auto generated from the website.
+
+== Technology Used
+
+* `Leptos-rs` for the website and `trunkrs` for the hosting.
+* `Serde` for serializing and deserializing communications with server and client.
