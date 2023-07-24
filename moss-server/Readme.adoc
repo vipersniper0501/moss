@@ -1,4 +1,4 @@
-= Plan
+= The Plan
 
 Ideal setup for the server is the following: Host website for user/admin to 
 identify what they want monitored and what machines on the network are allowed to 
