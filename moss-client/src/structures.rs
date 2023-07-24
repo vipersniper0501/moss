@@ -45,6 +45,22 @@ impl MossFilesResults {
 }
 
 
+#[derive(Debug, Default)]
+pub struct LinuxUserData {
+    pub uid: i32,
+    pub gid: i32,
+    pub has_password: bool,
+    pub name: String,
+    pub home_dir: String,
+    pub shell: String,
+}
+
+impl LinuxUserData {
+    pub fn new() -> Self {
+        Self::default()
+    }
+}
+
 
 // Need to figure out return structure for server...
 
