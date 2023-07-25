@@ -8,7 +8,7 @@
     "invalid_files": [
         {"name": "passwords", "location": "/mnt/c/dev/passwords"}
     ],
-    "valid_users": ["viper"],
+    "valid_users": ["viper", "michael", "root", "micha"],
     "invalid_users": ["jake"]
 
 }
