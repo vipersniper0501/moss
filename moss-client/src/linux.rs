@@ -13,6 +13,7 @@ pub fn perform_checks(config_data: &MossData) -> MossResults {
     results = detect_invalid_files(&config_data, results);
 
     // Valid Users
+    results = detect_valid_users(&config_data, results);
 
     // Invalid Users
 
@@ -70,6 +71,7 @@ fn detect_invalid_files(config_data: &MossData, mut results: MossResults) -> Mos
     return results;
 }
 
+/// Function reads from /etc/passwd and generates a Vec of Linux users.
 fn list_users() -> Vec<LinuxUserData> {
     let mut users: Vec<LinuxUserData> = Vec::new();
 
@@ -113,8 +115,26 @@ fn list_users() -> Vec<LinuxUserData> {
     return users;
 }
 
-fn _detect_valid_users() {
+fn detect_valid_users(config_data: &MossData, mut results: MossResults) -> MossResults {
+    let local_users: Vec<LinuxUserData> = list_users();
+    for user in config_data.valid_users.iter() {
+        let mut false_flag = false;
+        for l in local_users.iter() {
+            if l.name == user.to_owned() {
+                results.valid_users.push(true);
+                false_flag = false;
+                break;
+            } 
+            else {
+                false_flag = true;
+            }
+        }
+        if false_flag {
+            results.valid_users.push(false);
+        }
+    }
 
+    return results;
 }
 
 fn _detect_invalid_users() {
