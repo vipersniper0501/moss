@@ -115,10 +115,20 @@ fn list_users() -> Vec<LinuxUserData> {
     return users;
 }
 
+/// Compares a list users on the current system to the config list of users that
+/// are supposed to be on the system. Returns the provided MossResults structure
+/// updated with the comparison results.
+///
+/// * `config_data`: Data from config file
+/// * `results`: MossResults structure with add comparison results for valid users
 fn detect_valid_users(config_data: &MossData, mut results: MossResults) -> MossResults {
     let local_users: Vec<LinuxUserData> = list_users();
     for user in config_data.valid_users.iter() {
+
+        // false_flag is used as a flag that goes off if there was no user 
+        // matching a user in the config.
         let mut false_flag = false;
+
         for l in local_users.iter() {
             if l.name == user.to_owned() {
                 results.valid_users.push(true);
