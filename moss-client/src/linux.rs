@@ -8,6 +8,9 @@ pub fn perform_checks(config_data: &MossData) -> MossResults {
 
     let mut results: MossResults = MossResults::new();
 
+    // Note: None of this needs to be done sequentially. Might be eventually a
+    // good idea to split these off through different threads.
+
     // Files
     results = detect_approved_files(&config_data, results);
     results = detect_invalid_files(&config_data, results);
