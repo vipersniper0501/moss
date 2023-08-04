@@ -155,8 +155,6 @@ fn _detect_invalid_users() {
 }
 
 
-// Tests Coming Soon!
-
 #[cfg(test)]
 mod tests {
     use crate::{structures::*,
