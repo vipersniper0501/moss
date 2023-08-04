@@ -72,7 +72,7 @@ mod tests {
 
     #[test]
     fn test_deserialize_server() {
-        let input = fs::File::open("moss-client/tmp/test.json").expect("No file found");
+        let input = fs::File::open("tmp/test.json").expect("No file found");
         let deserialized_data: MossData = serde_json::from_reader(input).unwrap();
         assert_eq!(deserialized_data.server, "127.0.0.1");
         assert_eq!(deserialized_data.approved_files.len(), 3);
