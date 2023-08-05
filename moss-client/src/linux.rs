@@ -2,7 +2,7 @@
 
 use std::fs;
 
-use crate::structures::*;
+use moss_lib::*;
 
 pub fn perform_checks(config_data: &MossData) -> MossResults {
 
@@ -156,9 +156,9 @@ fn _detect_invalid_users() {
 
 
 #[cfg(test)]
-mod tests {
-    use crate::{structures::*,
-        linux::list_users};
+mod linux_tests {
+    use crate::linux::list_users;
+    use moss_lib::*;
 
     #[test]
     fn test_list_users() {

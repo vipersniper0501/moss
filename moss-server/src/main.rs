@@ -1,5 +1,6 @@
 use tokio::{net::TcpListener, io::AsyncReadExt, io::AsyncWriteExt};
 use std::net::SocketAddr;
+use moss_lib::*;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -74,7 +75,7 @@ fn handle_request(request: &str) -> String {
 }
 
 #[cfg(test)]
-mod tests {
+mod server_main_tests {
     use crate::handle_request;
 
     #[test]

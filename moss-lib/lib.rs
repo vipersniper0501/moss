@@ -65,7 +65,7 @@ impl LinuxUserData {
 // Need to figure out return structure for server...
 
 #[cfg(test)]
-mod tests {
+mod lib_tests {
     use std::fs;
 
     use super::*;

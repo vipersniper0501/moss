@@ -1,11 +1,8 @@
-
 use std::fs;
 
-pub mod structures;
 pub mod linux;
-
-use structures::*;
 use linux::*;
+use moss_lib::*;
 
 /// Gets config from a local file then runs the perform_checks
 /// function to begin
