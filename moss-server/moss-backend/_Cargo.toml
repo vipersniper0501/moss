@@ -1,5 +1,5 @@
 [package]
-name = "moss-server"
+name = "moss_backend"
 version = "0.1.0"
 edition = "2021"
 
