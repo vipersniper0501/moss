@@ -1,5 +1,5 @@
 use tokio::{net::TcpListener, io::AsyncReadExt, io::AsyncWriteExt};
-use std::net::SocketAddr;
+use std::{net::SocketAddr, fs};
 use moss_lib::*;
 
 #[tokio::main]
@@ -7,6 +7,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let addr: SocketAddr = "127.0.0.1:2342".parse()?;
     let listener = TcpListener::bind(&addr).await?;
 
+    // Make it so that when launching, it takes an argument as to where to load
+    // and store config files. This way I don't have to predict where they should
+    // be.
     println!("Moss-Server listening on {}", addr);
 
     while let Ok((mut stream, _)) = listener.accept().await {
@@ -41,6 +44,12 @@ async fn handle_connection(stream: &mut tokio::net::TcpStream) {
             }
         }
     }
+}
+
+fn load_config(path: &str) -> MossData {
+    let path = fs::File::open(path).expect("Config file not found.");
+    let config_data: MossData = serde_json::from_reader(path).unwrap();
+    return config_data;
 }
 
 fn handle_request(request: &str) -> String {
