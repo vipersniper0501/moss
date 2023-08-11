@@ -4,7 +4,7 @@ use moss_lib::*;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr: SocketAddr = "127.0.0.1:2342".parse()?;
+    let addr: SocketAddr = "0.0.0.0:4223".parse()?;
     let listener = TcpListener::bind(&addr).await?;
 
     // Make it so that when launching, it takes an argument as to where to load
