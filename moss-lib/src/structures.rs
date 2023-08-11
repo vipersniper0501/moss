@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct MossData {
     pub server: String,
     pub approved_files: Vec<MossFileData>,
@@ -12,14 +12,14 @@ pub struct MossData {
     pub invalid_users: Vec<String>
 }
 
-#[derive(Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct MossFileData {
     pub name: String, 
     pub location: String
 }
 
 
-#[derive(Serialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct MossResults {
     pub approved_files: Vec<MossFilesResults>,
     pub invalid_files: Vec<MossFilesResults>,
@@ -34,7 +34,7 @@ impl MossResults {
     }
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct MossFilesResults {
     pub name: String,
     pub status: bool
@@ -74,7 +74,7 @@ mod lib_tests {
 
     #[test]
     fn test_deserialize_server() {
-        let input = fs::File::open("tmp/test.json").expect("No file found");
+        let input = fs::File::open("../tmp/test.json").expect("No file found");
         let deserialized_data: MossData = serde_json::from_reader(input).unwrap();
         assert_eq!(deserialized_data.server, "127.0.0.1");
         assert_eq!(deserialized_data.approved_files.len(), 3);

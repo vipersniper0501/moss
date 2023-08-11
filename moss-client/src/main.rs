@@ -13,6 +13,7 @@ fn local_mode(path: &str) {
     loop {
         let result_data: MossResults = perform_checks(&config_data);
         println!("{:#?}", result_data);
+        println!("{:#?}", serde_json::to_string(&result_data));
         todo!();
     }
 }
