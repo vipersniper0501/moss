@@ -5,6 +5,17 @@ identify what they want monitored and what machines on the network are allowed t
 pull the config from the server. All the clients will be pointed to this server
 to the pull the config that will be auto generated from the website.
 
+== Flow of website
+
+=== Initial setup
+
+Initial setup will ask the user to list how many teams (int), what systems 
+are being monitored (Name of system OS and IP address), ask what is to be monitored for each system.
+
+=== Main page
+
+Show realtime updates from clients' results to monitor competition
+
 == Technology Used
 
 * `Yew.rs` for the frontend admin website and `trunkrs` for the hosting.
