@@ -14,6 +14,8 @@ path = "moss-frontend/src/main.rs"
 [dependencies]
 actix-cors = "0.6.4"
 actix-web = "4.3.1"
-moss-lib = {path = "../moss-lib"}
+moss-lib = { path = "../moss-lib" }
 serde = { version = "1.0.183", features = ["derive"] }
 serde_json = "1.0.104"
+dotenv = "0.15.0"
+mysql = "24.0.0"

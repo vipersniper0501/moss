@@ -1,6 +1,14 @@
 use actix_web::{get, post, web, Responder, HttpResponse};
 
 use moss_lib::MossResults;
+use mysql::*;
+use mysql::prelude::*;
+
+
+pub struct AppState {
+    pub db_pool: Pool
+}
+
 
 // Future idea for how to handle request from clients: // /api/v1/{team_id}/{system}/{method}
 // An example would be: /api/v1/1/ubuntu_18/get_config
@@ -18,14 +26,32 @@ pub async fn submit_results(path_data: web::Path<(i32, String)>,results: web::Js
     let (team_id, system) = path_data.into_inner();
 
 
-    // Save results to file
-    // File structure could be something like:
-    // /moss/competition/{team_id}/{system}/<Config and results go here>
-
     println!("Results:\n{results:#?}");
     HttpResponse::Ok().body("Recieved results.")
 }
 
+#[post("/api/v1/create_teams/{amount}")]
+pub async fn create_teams(path_data: web::Path<i32>, app_data: web::Data<AppState>) -> impl Responder {
+    let amount = path_data.into_inner();
+    let app_data = app_data.into_inner();
+    let pool = app_data.db_pool.clone();
+    match pool.get_conn() {
+        Ok(mut v) => {
+            for i in 1..=amount {
+                // let params = params![format!("Team {}", i)];
+                v.exec_drop(r"INSERT INTO Teams (TeamName) VALUES (?)", (format!("Team {}", i),))
+                    .expect("Failed to insert into table");
+            }
+        },
+        Err(e) => {
+            return HttpResponse::ExpectationFailed()
+                .body(format!("Failed to get connection from pool: {}",
+                        e.to_string()));
+        }
+    }
+
+    HttpResponse::Ok().body("Success")
+}
 
 
 #[post("/api/v1/test_handler")]
