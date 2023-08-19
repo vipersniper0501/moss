@@ -44,7 +44,6 @@ async fn main() -> std::io::Result<()> {
             }))
             .service(test_response)
             .service(submit_results)
-            .service(test_handler)
             .service(get_team_config)
             .service(create_teams)
     })
