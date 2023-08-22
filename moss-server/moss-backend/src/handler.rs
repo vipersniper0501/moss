@@ -7,7 +7,7 @@ use serde::Deserialize;
 
 
 pub struct AppState {
-    pub db_pool: Pool
+    pub db_pool: Pool,
 }
 
 #[derive(Deserialize)]
@@ -23,14 +23,161 @@ pub async fn get_team_config(path_data: web::Path<(i32, String)>) -> impl Respon
     HttpResponse::Ok().body(format!("<Config data for team {team_id}'s {system} system goes here>"))
 }
 
+
+/// 
+///
+/// * `app_data`: 
+fn get_number_of_teams(app_data: &web::Data<AppState>) -> Option<Result<i32, Box<dyn std::error::Error>>> {
+    let pool = app_data.db_pool.clone();
+
+    match pool.get_conn() {
+        Ok(mut v) => {
+
+            match v.query_first::<i32, &str>(
+                "SELECT MAX(TeamID) \
+                 FROM Teams"
+            ) {
+                Ok(result) => {
+                    match result {
+                        Some(value) => {
+                            return Some(Ok(value));
+                        }
+                        None => {
+                            return None;
+                        }
+                    }
+                }
+                Err(e) => {
+                    return Some(Err(Box::new(e)));
+                }
+            }
+        }
+        Err(e) => {
+            return Some(Err(Box::new(e)));
+        }
+    }
+
+}
+
+/// Gets the list of operating systems that are being monitored from the
+/// database.
+///
+/// Pre-req: Requres at least one team with id value of 1
+///
+/// * `app_data`: The AppState of the program that contains global data
+fn get_db_ops(app_data: &web::Data<AppState>) -> Result<Vec<String>, Box<dyn std::error::Error>> {
+    
+    // let app_data = app_data.clone();
+    // let app_data = app_data.into_inner();
+    let pool = app_data.db_pool.clone();
+
+    match pool.get_conn() {
+        Ok(mut v) => {
+            match v.query_map (
+                "SELECT OperatingSystem \
+                 FROM Configurations \
+                 WHERE TeamID = 1",
+                 |operating_system: String| operating_system,
+            ) {
+                Ok(v) => {
+                    return Ok(v);
+
+                }
+                Err(e) => {
+                    return Err(Box::new(e));
+                }
+            }
+        }
+        Err(e) => {
+            return Err(Box::new(e));
+        }
+    }
+}
+
 #[post("/api/v1/submit_results/{team_id}/{system}")]
-pub async fn submit_results(path_data: web::Path<(i32, String)>,results: web::Json<MossResults>) -> impl Responder {
+pub async fn submit_results(path_data: web::Path<(i32, String)>,
+    app_data: web::Data<AppState>, results: web::Json<MossResults>) -> impl Responder {
+
     let (team_id, system) = path_data.into_inner();
+
+    let ops;
+    match get_db_ops(&app_data) {
+        Ok(v) => {ops = v}
+        Err(e) => {
+            return HttpResponse::ExpectationFailed()
+                .body(
+                    format!("Failed to get operating systems from the database: {}", e)
+                    )
+        }
+    }
+
+    if !ops.contains(&system) {
+        return HttpResponse::BadRequest()
+            .body(format!("System {} is not in database.", system));
+    }
+
+    let teams_amount: i32;
+    match get_number_of_teams(&app_data) {
+        Some(v) => {
+            match v {
+                Ok(result) => {
+                    teams_amount = result;
+                }
+                Err(e) => {
+                    return HttpResponse::ExpectationFailed()
+                        .body(format!("Error contacting database: {}", e));
+                }
+            }
+        }
+        None => {
+            return HttpResponse::ExpectationFailed()
+                .body("Failed because there are no teams in the database.");
+        }
+    }
+
+    if team_id > teams_amount || team_id < 1 {
+        return HttpResponse::BadRequest()
+            .body(format!("Team {} does not exist in the database.", team_id));
+    }
+
     let results = results.into_inner();
+    let results_json;
+    match serde_json::to_string(&results) {
+        Ok(v) => results_json = v,
+        Err(e) => {
+            return HttpResponse::BadRequest()
+                .body(format!("Failed to serialize struct into json: {}", e));
+        }
+    }
 
+    let pool = app_data.db_pool.clone();
+    match pool.get_conn() {
+        Ok(mut v) => {
+            match v.exec_drop(
+                "UPDATE Results \
+                 SET ResultData = :result_json \
+                 WHERE TeamID = :team_id AND OperatingSystem = :operating_system",
+                params!{
+                    "result_json" => results_json,
+                    "team_id" => team_id,
+                    "operating_system" => system
+                }
+            ) {
+                Ok(()) => {/*Do nothing if success*/},
+                Err(e) => {
+                    return HttpResponse::BadRequest()
+                        .body(format!("Failed to insert into table: {}", e));
+                }
+            }
+        }
+        Err(e) => {
+            return HttpResponse::ExpectationFailed()
+                .body(format!("Failed to get connection from pool: {}", e));
 
-    println!("Results:\n{results:#?}");
-    HttpResponse::Ok().body("Recieved results.")
+        }
+    }
+
+    HttpResponse::Ok().body("Success")
 }
 
 // Note: This should only be called once when first setting up admin dashboard.
@@ -100,8 +247,7 @@ pub async fn create_teams(path_data: web::Path<i32>, app_data: web::Data<AppStat
         },
         Err(e) => {
             return HttpResponse::ExpectationFailed()
-                .body(format!("Failed to get connection from pool: {}",
-                        e.to_string()));
+                .body(format!("Failed to get connection from pool: {}", e));
         }
     }
 
