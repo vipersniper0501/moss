@@ -18,7 +18,7 @@ async fn main() -> std::io::Result<()> {
     
     dotenv().ok();
 
-    let database_url = std::env::var("MYSQL_DATABASE_URL")
+    let database_url = std::env::var("DATABASE_URL")
         .expect("Could not find mysql database url in .env file");
 
     if database_url.contains("root") {
@@ -44,7 +44,8 @@ async fn main() -> std::io::Result<()> {
             }))
             .service(test_response)
             .service(submit_results)
-            .service(get_team_config)
+            .service(get_config)
+            .service(update_config)
             .service(create_teams)
     })
     .bind(("0.0.0.0", 4224))?

@@ -15,18 +15,92 @@ pub struct OpsList {
     operating_systems: Vec<String>
 }
 
+/// Takes a system name and compares it to the database to see if it is already
+/// in the database.
+///
+/// * `system`: Name of operating system
+/// * `app_data`: Structure containing app state
+fn validate_system(system: &String, app_data: &web::Data<AppState>) -> Result<(), HttpResponse> {
+    let ops = match get_db_ops(app_data) {
+        Ok(v) => v,
+        Err(e) => {
+            return Err(HttpResponse::ExpectationFailed()
+                .body(
+                    format!("Failed to get operating systems from the database: {}", e)
+                    ));
+        }
+    };
+    if !ops.contains(system) {
+        return Err(HttpResponse::BadRequest()
+            .body(format!("System {} is not in database.", system)));
+    }
+    Ok(())
+}
+
+/// Takes a team id and compares it to the database to see if it is already in
+/// the database.
+///
+/// * `team_id`: 
+/// * `app_data`: Structure containing app state
+fn validate_team(team_id: i32, app_data: &web::Data<AppState>) -> Result<(), HttpResponse> {
+    let teams_amount: i32 = match get_number_of_teams(&app_data) {
+        Some(v) => {
+            match v {
+                Ok(result) => result,
+                Err(e) => {
+                    return Err(HttpResponse::ExpectationFailed()
+                        .body(format!("Error contacting database: {}", e)));
+                }
+            }
+        }
+        None => {
+            return Err(HttpResponse::ExpectationFailed()
+                .body("Failed because there are no teams in the database."));
+        }
+    };
+
+    if team_id > teams_amount || team_id < 1 {
+        return Err(HttpResponse::BadRequest()
+            .body(format!("Team {} does not exist in the database.", team_id)));
+    }
+    Ok(())
+}
+
+#[post("/api/v1/update_config/{team_id}/{system}")]
+pub async fn update_config(path_data: web::Path<(i32, String)>, app_data: web::Data<AppState>) -> impl Responder {
+    let (team_id, system) = path_data.into_inner();
+
+    if let Err(response) = validate_system(&system, &app_data) {
+        return response;
+    }
+
+    if let Err(response) = validate_team(team_id, &app_data) {
+        return response;
+    }
+
+    HttpResponse::Ok().body("Sucess")
+}
+
 
 #[get("/api/v1/get_config/{team_id}/{system}")]
-pub async fn get_team_config(path_data: web::Path<(i32, String)>) -> impl Responder {
+pub async fn get_config(path_data: web::Path<(i32, String)>, app_data: web::Data<AppState>) -> impl Responder {
     let (team_id, system) = path_data.into_inner();
+
+    if let Err(response) = validate_system(&system, &app_data) {
+        return response;
+    }
+
+    if let Err(response) = validate_team(team_id, &app_data) {
+        return response;
+    }
 
     HttpResponse::Ok().body(format!("<Config data for team {team_id}'s {system} system goes here>"))
 }
 
 
-/// 
+/// Gets the number of teams that are in the database.
 ///
-/// * `app_data`: 
+/// * `app_data`: The AppState of the program that contains global data
 fn get_number_of_teams(app_data: &web::Data<AppState>) -> Option<Result<i32, Box<dyn std::error::Error>>> {
     let pool = app_data.db_pool.clone();
 
@@ -94,50 +168,19 @@ fn get_db_ops(app_data: &web::Data<AppState>) -> Result<Vec<String>, Box<dyn std
     }
 }
 
+
 #[post("/api/v1/submit_results/{team_id}/{system}")]
 pub async fn submit_results(path_data: web::Path<(i32, String)>,
     app_data: web::Data<AppState>, results: web::Json<MossResults>) -> impl Responder {
 
     let (team_id, system) = path_data.into_inner();
 
-    let ops;
-    match get_db_ops(&app_data) {
-        Ok(v) => {ops = v}
-        Err(e) => {
-            return HttpResponse::ExpectationFailed()
-                .body(
-                    format!("Failed to get operating systems from the database: {}", e)
-                    )
-        }
+    if let Err(response) = validate_team(team_id, &app_data) {
+        return response;
     }
 
-    if !ops.contains(&system) {
-        return HttpResponse::BadRequest()
-            .body(format!("System {} is not in database.", system));
-    }
-
-    let teams_amount: i32;
-    match get_number_of_teams(&app_data) {
-        Some(v) => {
-            match v {
-                Ok(result) => {
-                    teams_amount = result;
-                }
-                Err(e) => {
-                    return HttpResponse::ExpectationFailed()
-                        .body(format!("Error contacting database: {}", e));
-                }
-            }
-        }
-        None => {
-            return HttpResponse::ExpectationFailed()
-                .body("Failed because there are no teams in the database.");
-        }
-    }
-
-    if team_id > teams_amount || team_id < 1 {
-        return HttpResponse::BadRequest()
-            .body(format!("Team {} does not exist in the database.", team_id));
+    if let Err(response) = validate_system(&system, &app_data) {
+        return response;
     }
 
     let results = results.into_inner();
