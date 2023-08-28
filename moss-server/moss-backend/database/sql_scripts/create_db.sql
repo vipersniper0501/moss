@@ -1,18 +1,18 @@
 CREATE TABLE IF NOT EXISTS Teams (
-    TeamID INT PRIMARY KEY,
-    TeamName VARCHAR(100)
+    team_id INT PRIMARY KEY,
+    team_name VARCHAR(100)
 );
 
 CREATE TABLE IF NOT EXISTS Configurations (
-    ConfigurationID SERIAL PRIMARY KEY,
-    TeamID INT REFERENCES Teams(TeamID),
-    OperatingSystem VARCHAR(50),
-    ConfigurationData JSON
+    configuration_id SERIAL PRIMARY KEY,
+    team_id INT REFERENCES Teams(team_id),
+    operating_system VARCHAR(50),
+    configuration_data JSON
 );
 
 CREATE TABLE IF NOT EXISTS Results (
-    ResultID SERIAL PRIMARY KEY,
-    TeamID INT REFERENCES Teams(TeamID),
-    OperatingSystem VARCHAR(50),
-    ResultData JSON
+    result_id SERIAL PRIMARY KEY,
+    team_id INT REFERENCES Teams(team_id),
+    operating_system VARCHAR(50),
+    result_data JSON
 )
