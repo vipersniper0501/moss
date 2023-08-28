@@ -1,6 +1,6 @@
 use actix_web::{get, post, web, Responder, HttpResponse};
 
-use moss_lib::MossResults;
+use moss_lib::{MossResults, MossData};
 use mysql::*;
 use mysql::prelude::*;
 use serde::Deserialize;
@@ -67,7 +67,8 @@ fn validate_team(team_id: i32, app_data: &web::Data<AppState>) -> Result<(), Htt
 }
 
 #[post("/api/v1/update_config/{team_id}/{system}")]
-pub async fn update_config(path_data: web::Path<(i32, String)>, app_data: web::Data<AppState>) -> impl Responder {
+pub async fn update_config(path_data: web::Path<(i32, String)>, app_data: web::Data<AppState>,
+config: web::Json<MossData>) -> impl Responder {
     let (team_id, system) = path_data.into_inner();
 
     if let Err(response) = validate_system(&system, &app_data) {
@@ -76,6 +77,42 @@ pub async fn update_config(path_data: web::Path<(i32, String)>, app_data: web::D
 
     if let Err(response) = validate_team(team_id, &app_data) {
         return response;
+    }
+
+    let config = config.into_inner();
+    let config_json = match serde_json::to_string(&config) {
+        Ok(v) => v,
+        Err(e) => {
+            return HttpResponse::BadRequest()
+                .body(format!("Failed to serialize struct into json: {}", e));
+        }
+    };
+
+    let pool = app_data.db_pool.clone();
+    match pool.get_conn() {
+        Ok(mut v) => {
+            match v.exec_drop(
+                "UPDATE Configurations \
+                 SET ConfigurationData = :config_json \
+                 WHERE TeamID = :team_id AND OperatingSystem = :operating_system",
+                params!{
+                    "config_json" => config_json,
+                    "team_id" => team_id,
+                    "operating_system" => system
+                }
+            ) {
+                Ok(()) => {/*Do nothing if success*/},
+                Err(e) => {
+                    return HttpResponse::BadRequest()
+                        .body(format!("Failed to insert into table: {}", e));
+                }
+            }
+
+        }
+        Err(e) => {
+            return HttpResponse::ExpectationFailed()
+                .body(format!("Failed to get connection from pool: {}", e));
+        }
     }
 
     HttpResponse::Ok().body("Sucess")
@@ -184,14 +221,13 @@ pub async fn submit_results(path_data: web::Path<(i32, String)>,
     }
 
     let results = results.into_inner();
-    let results_json;
-    match serde_json::to_string(&results) {
-        Ok(v) => results_json = v,
+    let results_json = match serde_json::to_string(&results) {
+        Ok(v) => v,
         Err(e) => {
             return HttpResponse::BadRequest()
                 .body(format!("Failed to serialize struct into json: {}", e));
         }
-    }
+    };
 
     let pool = app_data.db_pool.clone();
     match pool.get_conn() {
@@ -216,12 +252,31 @@ pub async fn submit_results(path_data: web::Path<(i32, String)>,
         Err(e) => {
             return HttpResponse::ExpectationFailed()
                 .body(format!("Failed to get connection from pool: {}", e));
-
         }
     }
 
     HttpResponse::Ok().body("Success")
 }
+
+
+#[get("/api/v1/get_results/{team_id}/{system}")]
+pub async fn get_results(path_data: web::Path<(i32, String)>, app_data: web::Data<AppState>)
+    -> impl Responder {
+
+    let (team_id, system) = path_data.into_inner();
+
+    if let Err(response) = validate_team(team_id, &app_data) {
+        return response;
+    }
+
+    if let Err(response) = validate_system(&system, &app_data) {
+        return response;
+    }
+
+
+    HttpResponse::Ok().body("Sucess")
+}
+
 
 // Note: This should only be called once when first setting up admin dashboard.
 #[post("/api/v1/create_teams/{amount}")]
