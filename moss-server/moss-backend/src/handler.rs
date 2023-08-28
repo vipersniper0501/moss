@@ -110,7 +110,28 @@ pub async fn get_config(path_data: web::Path<(i32, String)>, app_data: web::Data
         return response;
     }
 
-    HttpResponse::Ok().body(format!("<Config data for team {team_id}'s {system} system goes here>"))
+    let pool = app_data.db_xpool.clone();
+
+    let result = match sqlx::query!(
+        "SELECT configuration_data \
+         FROM Configurations \
+         WHERE team_id = ? AND operating_system = ?",
+         team_id,
+         system
+    ).fetch_one(&pool).await {
+        Ok(v) => {
+            match v.configuration_data {
+                Some(result) => result.to_string(),
+                None => "No data".to_string()
+            }
+        }
+        Err(e) => {
+            return HttpResponse::InternalServerError()
+                .body(format!("Failed to execute query on database: {}", e));
+        }
+    };
+
+    HttpResponse::Ok().body(result)
 }
 
 
@@ -157,8 +178,8 @@ async fn get_db_ops(app_data: &web::Data<AppState>) -> Result<Vec<String>, Box<d
             let operating_systems: Vec<String> = v.iter()
                 .map(|row|
                     match &row.operating_system {
-                        Some(x) => x.to_owned(),
-                        None => "".to_string()
+                        Some(x) => x.to_string(),
+                        None => "No data".to_string()
                     }
                     ).collect();
             operating_systems
