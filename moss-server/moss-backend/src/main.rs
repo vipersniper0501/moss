@@ -13,9 +13,6 @@ async fn main() -> std::io::Result<()> {
 
     // Notes: Perhaps, I should take in arguments for
     // the database password.
-    //
-    // Should also ensure database can be connected to before the 
-    // backend can even turn on.
     
     dotenv().ok();
 

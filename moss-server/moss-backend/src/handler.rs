@@ -229,18 +229,28 @@ pub async fn get_results(path_data: web::Path<(i32, String)>, app_data: web::Dat
         return response;
     }
 
-    // let pool = app_data.db_xpool.clone();
+    let pool = app_data.db_xpool.clone();
     
-    // let conn = match pool.acquire().await  {
-        // Ok(v) => v,
-        // Err(e) => {
-            // return HttpResponse::ExpectationFailed()
-                // .body(format!("Failed to connect to database: {}", e));
-        // }
-    // };
+    let result = match sqlx::query!(
+        "SELECT result_data \
+         FROM Results \
+         WHERE team_id = ? AND operating_system = ?",
+         team_id,
+         system
+    ).fetch_one(&pool).await {
+        Ok(v) => {
+            match v.result_data {
+                Some(result) => result.to_string(),
+                None => "No data".to_string()
+            }
+        }
+        Err(e) => {
+            return HttpResponse::InternalServerError()
+                .body(format!("Failed to execute query on database: {}", e));
+        }
+    };
 
-
-    HttpResponse::Ok().body("Sucess")
+    HttpResponse::Ok().body(result)
 }
 
 
