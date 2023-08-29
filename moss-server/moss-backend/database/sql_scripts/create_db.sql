@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS Teams (
 
 CREATE TABLE IF NOT EXISTS Configurations (
     configuration_id SERIAL PRIMARY KEY,
-    team_id INT REFERENCES Teams(team_id),
     operating_system VARCHAR(50),
     configuration_data JSON
 );

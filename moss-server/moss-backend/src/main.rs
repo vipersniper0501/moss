@@ -17,7 +17,7 @@ async fn main() -> std::io::Result<()> {
     dotenv().ok();
 
     let database_url = std::env::var("DATABASE_URL")
-        .expect("Could not find mysql database url in .env file");
+        .expect("Could not find mysql database url in .env file {DATABASE_URL=\"my_database_url_here\"}");
 
     if database_url.contains("root") {
         println!("Warning: It would be a smart idea to change the user from \

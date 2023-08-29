@@ -82,9 +82,8 @@ config: web::Json<MossData>) -> impl Responder {
     match sqlx::query!(
         "UPDATE Configurations \
          SET configuration_data = ? \
-         WHERE team_id = ? AND operating_system = ?",
+         WHERE operating_system = ?",
          config_json,
-         team_id,
          system
     ).execute(&pool).await {
         Ok(_v) => {}
@@ -115,8 +114,7 @@ pub async fn get_config(path_data: web::Path<(i32, String)>, app_data: web::Data
     let result = match sqlx::query!(
         "SELECT configuration_data \
          FROM Configurations \
-         WHERE team_id = ? AND operating_system = ?",
-         team_id,
+         WHERE operating_system = ?",
          system
     ).fetch_one(&pool).await {
         Ok(v) => {
@@ -171,8 +169,7 @@ async fn get_db_ops(app_data: &web::Data<AppState>) -> Result<Vec<String>, Box<d
 
     let result: Vec<String> = match sqlx::query!(
         "SELECT operating_system \
-         FROM Configurations \
-         WHERE team_ID = 1"
+         FROM Configurations"
     ).fetch_all(&pool).await {
         Ok(v) => {
             let operating_systems: Vec<String> = v.iter()
@@ -281,11 +278,18 @@ pub async fn create_teams(path_data: web::Path<i32>, app_data: web::Data<AppStat
     ops_list: web::Json<OpsList>) -> impl Responder {
 
     let amount = path_data.into_inner();
+    let teams_amount = match get_number_of_teams(&app_data).await{
+        Ok(v) => v,
+        Err(e) => {
+            return HttpResponse::InternalServerError()
+                .body(format!("Failed to get number of teams from database: {}", e));
+        }
+    };
     let ops: Vec<String> = ops_list.into_inner().operating_systems;
 
     let pool = app_data.db_xpool.clone();
 
-    for i in 1..=amount {
+    for i in (1 + teams_amount)..=(amount + teams_amount) {
         match sqlx::query!(
             "INSERT INTO Teams (team_id, team_name) \
              VALUES (?, ?)",
@@ -300,18 +304,7 @@ pub async fn create_teams(path_data: web::Path<i32>, app_data: web::Data<AppStat
         };
 
         for x in 0..ops.len() {
-            match sqlx::query!(
-                "INSERT INTO Configurations (team_id, operating_system) \
-                 VALUES (?, ?)",
-                 i,
-                 ops[x as usize].clone()
-            ).execute(&pool).await {
-                Ok(_v) => {}
-                Err(e) => {
-                    return HttpResponse::InternalServerError()
-                        .body(format!("Failed to execute query on database: {}", e));
-                }
-            };
+            // Change this
 
             match sqlx::query!(
                 "INSERT INTO Results (team_id, operating_system) \
@@ -326,6 +319,20 @@ pub async fn create_teams(path_data: web::Path<i32>, app_data: web::Data<AppStat
                 }
             };
         }
+    }
+    for x in 0..ops.len() {
+        match sqlx::query!(
+            "INSERT INTO Configurations (operating_system) \
+             VALUES (?)",
+             ops[x as usize].clone()
+        ).execute(&pool).await {
+            Ok(_v) => {}
+            Err(e) => {
+                return HttpResponse::InternalServerError()
+                    .body(format!("Failed to execute query on database: {}", e));
+            }
+        };
+
     }
 
     HttpResponse::Ok().body("Success")
