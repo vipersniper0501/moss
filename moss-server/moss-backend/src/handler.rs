@@ -331,6 +331,55 @@ pub async fn create_teams(path_data: web::Path<i32>, app_data: web::Data<AppStat
 }
 
 
+#[post("/api/v1/remove_team/{team_id}")]
+pub async fn remove_team(path_data: web::Path<i32>, app_data: web::Data<AppState>) -> impl Responder {
+
+    let team_id = path_data.into_inner();
+
+    if let Err(response) = validate_team(team_id, &app_data).await {
+        return response;
+    }
+
+    let ops: Vec<String> = match get_db_ops(&app_data).await {
+        Ok(v) => v,
+        Err(e) => {
+            return HttpResponse::InternalServerError()
+                .body(format!("remove_team: Failed to retrieve list of operating \
+                        systems from database: {}", e));
+        }
+    };
+
+    let pool = app_data.db_xpool.clone();
+
+    // Delete team from Teams table
+    match sqlx::query!(
+        "DELETE FROM Teams \
+         WHERE team_id = ?",
+         team_id
+    ).execute(&pool).await {
+        Ok(_v) => {}
+        Err(e) => {
+            return HttpResponse::InternalServerError()
+                .body(format!("remvoe_team: Failed to execute query on database: {}", e));
+        }
+    }
+
+    // Delete team from results table
+    match sqlx::query!(
+        "DELETE FROM Results \
+         WHERE team_id = ?",
+         team_id
+    ).execute(&pool).await {
+        Ok(_v) => {}
+        Err(e) => {
+            return HttpResponse::InternalServerError()
+                .body(format!("remove_team: Failed to execute query on databse: {}", e));
+        }
+    }
+
+    HttpResponse::Ok().body("Success")
+}
+
 #[get("/api/v1/test_response")]
 pub async fn test_response() -> impl Responder {
     HttpResponse::Ok().body("Test response from Moss server backend!")

@@ -14,10 +14,13 @@ are being monitored (Name of system OS and IP address), ask what is to be monito
 
 === Main page
 
-Show realtime updates from clients' results to monitor competition
+Show realtime updates from clients' results to monitor competition.
+Has a seperate Admin only page for changing operating system configs, adding/removing
+teams, and some other stuff.
 
 == Technology Used
 
 * `Yew.rs` for the frontend admin website and `trunkrs` for the hosting.
-* `Actix.rs` for the backend api.
+* `Actix-web.rs` for the backend api along with `SQLx` for communicating with the
+    docker hosted MySQL database.
 * `Serde` for serializing and deserializing communications with server and client.
