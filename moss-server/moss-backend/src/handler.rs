@@ -37,7 +37,7 @@ async fn validate_system(system: &String, app_data: &web::Data<AppState>) -> Res
 /// Takes a team id and compares it to the database to see if it is already in
 /// the database.
 ///
-/// * `team_id`: 
+/// * `team_id`: Team identifier
 /// * `app_data`: Structure containing app state
 async fn validate_team(team_id: i32, app_data: &web::Data<AppState>) -> Result<(), HttpResponse> {
     let teams_amount: i32 = match get_number_of_teams(&app_data).await {
@@ -55,6 +55,8 @@ async fn validate_team(team_id: i32, app_data: &web::Data<AppState>) -> Result<(
     Ok(())
 }
 
+/// API Call to update the configs for a specified operating system in the 
+/// database
 #[post("/api/v1/update_config/{system}")]
 pub async fn update_config(path_data: web::Path<String>, app_data: web::Data<AppState>,
 config: web::Json<MossData>) -> impl Responder {
@@ -85,7 +87,7 @@ config: web::Json<MossData>) -> impl Responder {
         Ok(_v) => {}
         Err(e) => {
             return HttpResponse::InternalServerError()
-                .body(format!("Failed to execute query on database: {}", e));
+                .body(format!("update_config: Failed to execute query on database: {}", e));
         }
     }
 
@@ -93,6 +95,7 @@ config: web::Json<MossData>) -> impl Responder {
 }
 
 
+/// API Call to retrieve an operating systems config from the database.
 #[get("/api/v1/get_config/{system}")]
 pub async fn get_config(path_data: web::Path<String>, app_data: web::Data<AppState>) -> impl Responder {
     let system = path_data.into_inner();
@@ -117,7 +120,7 @@ pub async fn get_config(path_data: web::Path<String>, app_data: web::Data<AppSta
         }
         Err(e) => {
             return HttpResponse::InternalServerError()
-                .body(format!("Failed to execute query on database: {}", e));
+                .body(format!("get_config: Failed to execute query on database: {}", e));
         }
     };
 
@@ -217,7 +220,7 @@ pub async fn submit_results(path_data: web::Path<(i32, String)>,
         Ok(_v) => {}
         Err(e) => {
             return HttpResponse::InternalServerError()
-                .body(format!("Failed to execute query on database: {}", e));
+                .body(format!("submit_results: Failed to execute query on database: {}", e));
         }
     }
 
@@ -256,7 +259,7 @@ pub async fn get_results(path_data: web::Path<(i32, String)>, app_data: web::Dat
         }
         Err(e) => {
             return HttpResponse::InternalServerError()
-                .body(format!("Failed to execute query on database: {}", e));
+                .body(format!("get_results: Failed to execute query on database: {}", e));
         }
     };
 
@@ -291,7 +294,7 @@ pub async fn create_teams(path_data: web::Path<i32>, app_data: web::Data<AppStat
             Ok(_v) => {}
             Err(e) => {
                 return HttpResponse::InternalServerError()
-                    .body(format!("Failed to execute query on database: {}", e));
+                    .body(format!("create_teams: Failed to execute query on database: {}", e));
             }
         };
 
@@ -307,7 +310,7 @@ pub async fn create_teams(path_data: web::Path<i32>, app_data: web::Data<AppStat
                 Ok(_v) => {}
                 Err(e) => {
                     return HttpResponse::InternalServerError()
-                        .body(format!("Failed to execute query on database: {}", e));
+                        .body(format!("create_teams: Failed to execute query on database: {}", e));
                 }
             };
         }
@@ -321,7 +324,7 @@ pub async fn create_teams(path_data: web::Path<i32>, app_data: web::Data<AppStat
             Ok(_v) => {}
             Err(e) => {
                 return HttpResponse::InternalServerError()
-                    .body(format!("Failed to execute query on database: {}", e));
+                    .body(format!("create_teams: Failed to execute query on database: {}", e));
             }
         };
 
@@ -339,15 +342,6 @@ pub async fn remove_team(path_data: web::Path<i32>, app_data: web::Data<AppState
     if let Err(response) = validate_team(team_id, &app_data).await {
         return response;
     }
-
-    let ops: Vec<String> = match get_db_ops(&app_data).await {
-        Ok(v) => v,
-        Err(e) => {
-            return HttpResponse::InternalServerError()
-                .body(format!("remove_team: Failed to retrieve list of operating \
-                        systems from database: {}", e));
-        }
-    };
 
     let pool = app_data.db_xpool.clone();
 
