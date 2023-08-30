@@ -55,16 +55,12 @@ async fn validate_team(team_id: i32, app_data: &web::Data<AppState>) -> Result<(
     Ok(())
 }
 
-#[post("/api/v1/update_config/{team_id}/{system}")]
-pub async fn update_config(path_data: web::Path<(i32, String)>, app_data: web::Data<AppState>,
+#[post("/api/v1/update_config/{system}")]
+pub async fn update_config(path_data: web::Path<String>, app_data: web::Data<AppState>,
 config: web::Json<MossData>) -> impl Responder {
-    let (team_id, system) = path_data.into_inner();
+    let system = path_data.into_inner();
 
     if let Err(response) = validate_system(&system, &app_data).await {
-        return response;
-    }
-
-    if let Err(response) = validate_team(team_id, &app_data).await {
         return response;
     }
 
@@ -97,15 +93,11 @@ config: web::Json<MossData>) -> impl Responder {
 }
 
 
-#[get("/api/v1/get_config/{team_id}/{system}")]
-pub async fn get_config(path_data: web::Path<(i32, String)>, app_data: web::Data<AppState>) -> impl Responder {
-    let (team_id, system) = path_data.into_inner();
+#[get("/api/v1/get_config/{system}")]
+pub async fn get_config(path_data: web::Path<String>, app_data: web::Data<AppState>) -> impl Responder {
+    let system = path_data.into_inner();
 
     if let Err(response) = validate_system(&system, &app_data).await {
-        return response;
-    }
-
-    if let Err(response) = validate_team(team_id, &app_data).await {
         return response;
     }
 
