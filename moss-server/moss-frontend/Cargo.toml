@@ -1,0 +1,11 @@
+[package]
+name = "moss-frontend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+moss-lib = { path = "../../moss-lib" }
+serde = { version = "1.0.183", features = ["derive"] }
+serde_json = "1.0.104"
+dotenv = "0.15.0"
+yew = { version = "0.20.0", features = ["csr"] }

@@ -1,6 +1,0 @@
-[workspace]
-members = [
-    "moss-server",
-    "moss-lib",
-    "moss-client",
-]
