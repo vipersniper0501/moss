@@ -1,5 +1,13 @@
+use dotenv::dotenv;
 use yew::prelude::*;
 
+
+fn get_teams() -> Html {
+
+    html!{
+        "Something"
+    }
+}
 
 #[function_component(App)]
 fn app() -> Html {
@@ -34,7 +42,11 @@ fn app() -> Html {
 
                 <div class={"teams-column"}>
 
-                    <p>{"Test"}</p>
+                    // Will be replaced with a get_teams function to generate
+                    // these
+                    <div class={"team"}>
+                        <p>{"Test"}</p>
+                    </div>
                 </div>
             </div>
         </>
@@ -43,5 +55,7 @@ fn app() -> Html {
 
 
 fn main() {
+
+    dotenv().ok();
     yew::Renderer::<App>::new().render();
 }
