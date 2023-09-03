@@ -7,6 +7,9 @@ edition = "2021"
 moss-lib = { path = "../../moss-lib" }
 serde = { version = "1.0.183", features = ["derive"] }
 serde_json = "1.0.104"
-dotenv = "0.15.0"
-yew = { version = "0.20.0", features = ["csr"] }
+leptos = { version = "0.4.10", features = ["csr"] }
+# yew = { version = "0.20.0", features = ["csr"] }
 gloo-net = "0.4.0"
+# wasm-bindgen-futures = "0.4"
+dotenvy = "0.15.7"
+
