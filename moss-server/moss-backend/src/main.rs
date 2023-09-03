@@ -1,4 +1,5 @@
-use actix_web::{web, App,HttpServer};
+use actix_cors::Cors;
+use actix_web::{web, App,HttpServer, http::header};
 use dotenv::dotenv;
 use sqlx::mysql::MySqlPool;
 
@@ -40,9 +41,22 @@ async fn main() -> std::io::Result<()> {
         };
 
     println!("Listening on http://127.0.0.1:4224");
+
+
+
     HttpServer::new(move || {
         let xpool = xpool.clone();
+        let cors = Cors::default()
+            // Allows connection from local only frontend
+            // Need to figure out way to accept from other server locations...
+            .allowed_origin("http://127.0.0.1:4223")
+            .allowed_methods(vec!["GET", "POST"])
+            .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
+            .allowed_header(header::CONTENT_TYPE)
+            .max_age(3600);
+        // let cors = Cors::permissive();
         App::new()
+            .wrap(cors)
             .app_data(web::Data::new(AppState {
                 // db_pool: pool,
                 db_xpool: xpool
@@ -54,6 +68,7 @@ async fn main() -> std::io::Result<()> {
             .service(update_config)
             .service(create_teams)
             .service(remove_team)
+            .service(get_teams)
     })
     .bind(("0.0.0.0", 4224))?
     .run()

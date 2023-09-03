@@ -1,5 +1,5 @@
 use actix_web::{get, post, web, Responder, HttpResponse};
-use moss_lib::{MossResults, MossData};
+use moss_lib::{MossResults, MossData, Team};
 use serde::Deserialize;
 
 
@@ -372,6 +372,46 @@ pub async fn remove_team(path_data: web::Path<i32>, app_data: web::Data<AppState
     }
 
     HttpResponse::Ok().body("Success")
+}
+
+#[get("/api/v1/get_teams")]
+pub async fn get_teams(app_data: web::Data<AppState>) -> impl Responder {
+
+    let pool = app_data.db_xpool.clone();
+
+    let result = match sqlx::query!(
+        "SELECT * \
+         FROM Teams"
+    ).fetch_all(&pool).await {
+        Ok(v) => {
+            let teams: Vec<Team> = v
+                .iter()
+                .map(|row| {
+                    // let team_id: i32 = match row.team_id {
+                            // Some(x) => x,
+                            // None => 0
+                        // };
+                    let team_id: i32 = row.team_id;
+                    let name = match &row.team_name {
+                            Some(x) => x.to_string(),
+                            None => "No data".to_string()
+                        };
+                    Team {
+                        team_id,
+                        name
+                    }
+                }
+                ).collect();
+                teams
+        }
+        Err(e) => {
+            return HttpResponse::InternalServerError()
+                .body(format!("Failed to execute query on database: {}", e));
+
+        }
+    };
+
+    HttpResponse::Ok().json(result)
 }
 
 #[get("/api/v1/test_response")]
