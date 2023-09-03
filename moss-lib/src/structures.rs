@@ -19,6 +19,12 @@ pub struct MossFileData {
 }
 
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Team {
+    pub team_id: i32,
+    pub name: String
+}
+
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct MossResults {
     pub approved_files: Vec<MossFilesResults>,
