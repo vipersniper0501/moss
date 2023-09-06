@@ -1,4 +1,4 @@
-use actix_web::{get, post, web, Responder, HttpResponse};
+use actix_web::{get, post, delete, web, Responder, HttpResponse};
 use moss_lib::{MossResults, MossData, Team};
 use serde::Deserialize;
 
@@ -57,7 +57,7 @@ async fn validate_team(team_id: i32, app_data: &web::Data<AppState>) -> Result<(
 
 /// API Call to update the configs for a specified operating system in the 
 /// database
-#[post("/api/v1/update_config/{system}")]
+#[post("/api/v1/config/{system}")]
 pub async fn update_config(path_data: web::Path<String>, app_data: web::Data<AppState>,
 config: web::Json<MossData>) -> impl Responder {
     let system = path_data.into_inner();
@@ -96,7 +96,7 @@ config: web::Json<MossData>) -> impl Responder {
 
 
 /// API Call to retrieve an operating systems config from the database.
-#[get("/api/v1/get_config/{system}")]
+#[get("/api/v1/config/{system}")]
 pub async fn get_config(path_data: web::Path<String>, app_data: web::Data<AppState>) -> impl Responder {
     let system = path_data.into_inner();
 
@@ -185,7 +185,7 @@ async fn get_db_ops(app_data: &web::Data<AppState>) -> Result<Vec<String>, Box<d
 }
 
 
-#[post("/api/v1/submit_results/{team_id}/{system}")]
+#[post("/api/v1/results/{team_id}/{system}")]
 pub async fn submit_results(path_data: web::Path<(i32, String)>,
     app_data: web::Data<AppState>, results: web::Json<MossResults>) -> impl Responder {
 
@@ -228,7 +228,7 @@ pub async fn submit_results(path_data: web::Path<(i32, String)>,
 }
 
 
-#[get("/api/v1/get_results/{team_id}/{system}")]
+#[get("/api/v1/results/{team_id}/{system}")]
 pub async fn get_results(path_data: web::Path<(i32, String)>, app_data: web::Data<AppState>)
     -> impl Responder {
 
@@ -268,7 +268,7 @@ pub async fn get_results(path_data: web::Path<(i32, String)>, app_data: web::Dat
 
 
 // Note: This should only be called once when first setting up admin dashboard.
-#[post("/api/v1/create_teams/{amount}")]
+#[post("/api/v1/teams/{amount}")]
 pub async fn create_teams(path_data: web::Path<i32>, app_data: web::Data<AppState>,
     ops_list: web::Json<OpsList>) -> impl Responder {
 
@@ -334,7 +334,7 @@ pub async fn create_teams(path_data: web::Path<i32>, app_data: web::Data<AppStat
 }
 
 
-#[post("/api/v1/remove_team/{team_id}")]
+#[delete("/api/v1/teams/{team_id}")]
 pub async fn remove_team(path_data: web::Path<i32>, app_data: web::Data<AppState>) -> impl Responder {
 
     let team_id = path_data.into_inner();
@@ -374,7 +374,7 @@ pub async fn remove_team(path_data: web::Path<i32>, app_data: web::Data<AppState
     HttpResponse::Ok().body("Success")
 }
 
-#[get("/api/v1/get_teams")]
+#[get("/api/v1/teams")]
 pub async fn get_teams(app_data: web::Data<AppState>) -> impl Responder {
 
     let pool = app_data.db_xpool.clone();
