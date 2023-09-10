@@ -68,6 +68,7 @@ async fn main() -> std::io::Result<()> {
             .service(update_config)
             .service(create_teams)
             .service(remove_team)
+            .service(remove_multiple_teams)
             .service(get_teams)
     })
     .bind(("0.0.0.0", 4224))?

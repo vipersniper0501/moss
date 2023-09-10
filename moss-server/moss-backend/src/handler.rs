@@ -327,31 +327,38 @@ pub async fn create_teams(path_data: web::Path<i32>, app_data: web::Data<AppStat
             };
         }
     }
-    for x in 0..ops.len() {
-        match sqlx::query!(
-            "INSERT INTO Configurations (operating_system) \
-             VALUES (?)",
-             ops[x as usize].clone()
-        ).execute(&pool).await {
-            Ok(_v) => {}
-            Err(e) => {
-                return HttpResponse::InternalServerError()
-                    .body(format!("create_teams: Failed to execute query on database: {}", e));
-            }
-        };
 
+    let db_ops: Vec<String> = match get_db_ops(&app_data).await {
+        Ok(v) => v,
+        Err(_e) => vec![]
+    };
+    if db_ops.len() == 0 {
+        for x in 0..ops.len() {
+            match sqlx::query!(
+                "INSERT INTO Configurations (operating_system) \
+                 VALUES (?)",
+                 ops[x as usize].clone()
+            ).execute(&pool).await {
+                Ok(_v) => {}
+                Err(e) => {
+                    return HttpResponse::InternalServerError()
+                        .body(format!("create_teams: Failed to execute query on database: {}", e));
+                }
+            };
+
+        }
     }
 
     HttpResponse::Ok().body("Success")
 }
 
 
-#[delete("/api/v1/teams/{team_id}")]
+#[delete("/api/v1/teams/singular/{team_id}")]
 pub async fn remove_team(path_data: web::Path<i32>, app_data: web::Data<AppState>) -> impl Responder {
 
     let team_id = path_data.into_inner();
 
-    println!("{} DELETE /api/v1/teams/{}", Local::now().time().round_subsecs(3), team_id);
+    println!("{} DELETE /api/v1/teams/singular/{}", Local::now().time().round_subsecs(3), team_id);
 
     if let Err(response) = validate_team(team_id, &app_data).await {
         return response;
@@ -386,6 +393,13 @@ pub async fn remove_team(path_data: web::Path<i32>, app_data: web::Data<AppState
     }
 
     HttpResponse::Ok().body("Success")
+}
+
+// TODO!
+#[delete("/api/v1/teams/{amount}")]
+pub async fn remove_multiple_teams() -> impl Responder {
+    
+    HttpResponse::Ok().body("Not implemented yet.")
 }
 
 #[get("/api/v1/teams")]
