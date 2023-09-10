@@ -1,4 +1,5 @@
 use actix_web::{get, post, delete, web, Responder, HttpResponse};
+use chrono::prelude::*;
 use moss_lib::{MossResults, MossData, Team};
 use serde::Deserialize;
 
@@ -62,6 +63,8 @@ pub async fn update_config(path_data: web::Path<String>, app_data: web::Data<App
 config: web::Json<MossData>) -> impl Responder {
     let system = path_data.into_inner();
 
+    println!("{} POST /api/v1/config/{}", Local::now().time().round_subsecs(3),system);
+
     if let Err(response) = validate_system(&system, &app_data).await {
         return response;
     }
@@ -99,6 +102,8 @@ config: web::Json<MossData>) -> impl Responder {
 #[get("/api/v1/config/{system}")]
 pub async fn get_config(path_data: web::Path<String>, app_data: web::Data<AppState>) -> impl Responder {
     let system = path_data.into_inner();
+
+    println!("{} GET /api/v1/config/{}", Local::now().time().round_subsecs(3), system);
 
     if let Err(response) = validate_system(&system, &app_data).await {
         return response;
@@ -191,6 +196,8 @@ pub async fn submit_results(path_data: web::Path<(i32, String)>,
 
     let (team_id, system) = path_data.into_inner();
 
+    println!("{} POST /api/v1/results/{}/{}", Local::now().time().round_subsecs(3), team_id, system);
+
     if let Err(response) = validate_team(team_id, &app_data).await {
         return response;
     }
@@ -233,6 +240,8 @@ pub async fn get_results(path_data: web::Path<(i32, String)>, app_data: web::Dat
     -> impl Responder {
 
     let (team_id, system) = path_data.into_inner();
+    
+    println!("{} GET /api/v1/results/{}/{}", Local::now().time().round_subsecs(3), team_id, system);
 
     if let Err(response) = validate_team(team_id, &app_data).await {
         return response;
@@ -273,6 +282,9 @@ pub async fn create_teams(path_data: web::Path<i32>, app_data: web::Data<AppStat
     ops_list: web::Json<OpsList>) -> impl Responder {
 
     let amount = path_data.into_inner();
+
+    println!("{} POST /api/v1/teams/{}", Local::now().time().round_subsecs(3), amount);
+
     let teams_amount = match get_number_of_teams(&app_data).await{
         Ok(v) => v,
         Err(e) => {
@@ -339,6 +351,8 @@ pub async fn remove_team(path_data: web::Path<i32>, app_data: web::Data<AppState
 
     let team_id = path_data.into_inner();
 
+    println!("{} DELETE /api/v1/teams/{}", Local::now().time().round_subsecs(3), team_id);
+
     if let Err(response) = validate_team(team_id, &app_data).await {
         return response;
     }
@@ -377,6 +391,7 @@ pub async fn remove_team(path_data: web::Path<i32>, app_data: web::Data<AppState
 #[get("/api/v1/teams")]
 pub async fn get_teams(app_data: web::Data<AppState>) -> impl Responder {
 
+    println!("{} GET /api/v1/teams", Local::now().time().round_subsecs(3));
     let pool = app_data.db_xpool.clone();
 
     let result = match sqlx::query!(
