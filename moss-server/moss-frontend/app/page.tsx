@@ -1,11 +1,68 @@
-import {AdminNavbar} from './navbar'
+'use client';
+import { useEffect, useState } from 'react';
 
 import styles from './styles/page.module.scss'
 
+async function getTeams() {
+    try {
+        const request = await fetch(
+            "http://127.0.0.1:4224/api/v1/teams",
+            {method: "GET"}
+        );
+
+        const data = await request.json();
+        console.log(data);
+        return data;
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
+}
+
+
+interface Team {
+    team_id: number;
+    name: string;
+}
+
+function TeamsList() {
+    const [teams, setTeams] = useState<Team[] | undefined>(undefined);
+
+    useEffect(() => {
+        async function fetchTeams() {
+            try {
+                const data: Team[] = await getTeams();
+                setTeams(data);
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        fetchTeams();
+
+    }, []);
+
+    if (teams == undefined) {
+        return <p>Loading teams...</p>;
+    }
+    return (
+        <div>
+            {teams.map((val, index) => (
+                    <div key={index} className={styles.team}>
+                        <p>{val.name}</p>
+                    </div>
+            ))}
+        </div>
+
+    );
+}
+
+
 export default function Home() {
+    console.log("Test log");
     return (
         <>
-            <AdminNavbar />
             <div className={styles.content}>
                 <h1>Moss</h1>
                 <div className={styles.cardsColumn}>
@@ -21,11 +78,9 @@ export default function Home() {
                 </div>
 
                 <div className={styles.teamsColumn}>
-                    <div className={styles.team}>
-                        <p>Team ???</p>
-                    </div>
+                    <TeamsList />
                 </div>
             </div>
         </>
-    )
+    );
 }
