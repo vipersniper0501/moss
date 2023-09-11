@@ -21,7 +21,11 @@ teams, and some other stuff.
 
 == Technology Used
 
-* `Next.js` for the frontend and `Sass` for the styling.
-* `Actix-web.rs` for the backend api along with `SQLx` for communicating with the
-    docker hosted MySQL database.
+=== Frontend
+* `Next.js` for the framework and `Sass` for the styling.
+
+=== Backend
+* `Actix-web.rs` for the backend api along with the `SQLx` crate for communicating
+with the database.
 * `Serde` for serializing and deserializing communications with server and client.
+* `MySQL` database hosted in a `Docker` container.
