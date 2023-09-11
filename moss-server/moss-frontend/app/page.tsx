@@ -1,23 +1,8 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import useSWR from 'swr';
 
 import styles from './styles/page.module.scss'
-
-async function getTeams() {
-    try {
-        const request = await fetch(
-            "http://127.0.0.1:4224/api/v1/teams",
-            {method: "GET"}
-        );
-
-        const data = await request.json();
-        console.log(data);
-        return data;
-    } catch (err) {
-        console.log(err);
-        throw err;
-    }
-}
 
 
 interface Team {
@@ -26,33 +11,24 @@ interface Team {
 }
 
 function TeamsList() {
-    const [teams, setTeams] = useState<Team[] | undefined>(undefined);
+    const {data, error, isLoading} =  useSWR('http://127.0.0.1:4224/api/v1/teams',
+                                            async (url) => {
+                                                return fetch(url, {method: 'GET'})
+                                                .then(res => res.json());
+                                            });
 
-    useEffect(() => {
-        async function fetchTeams() {
-            try {
-                const data: Team[] = await getTeams();
-                setTeams(data);
+    if (error) return <p>Error occurred</p>;
 
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-        fetchTeams();
-
-    }, []);
-
-    if (teams == undefined) {
+    if (isLoading) {
         return <p>Loading teams...</p>;
     }
     return (
         <div>
-            {teams.map((val, index) => (
-                    <div key={index} className={styles.team}>
-                        <p>{val.name}</p>
-                    </div>
-            ))}
+        {data.map((val: Team, index: number) => (
+                <div key={index} className={styles.team}>
+                    <p>{val.name}</p>
+                </div>
+        ))}
         </div>
 
     );
@@ -60,7 +36,9 @@ function TeamsList() {
 
 
 export default function Home() {
-    console.log("Test log");
+
+    const router = useRouter();
+
     return (
         <>
             <div className={styles.content}>
@@ -78,6 +56,7 @@ export default function Home() {
                 </div>
 
                 <div className={styles.teamsColumn}>
+                <button onClick={() => router.refresh()}>Reload teams</button>
                     <TeamsList />
                 </div>
             </div>
