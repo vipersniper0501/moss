@@ -355,6 +355,9 @@ pub async fn create_teams(path_data: web::Path<i32>, app_data: web::Data<AppStat
 
 #[delete("/api/v1/teams/singular/{team_id}")]
 pub async fn remove_team(path_data: web::Path<i32>, app_data: web::Data<AppState>) -> impl Responder {
+    // TODO! Bug found where if you delete, lets say user 1, from the database,
+    // and then try to do it again, you are never stopped. This has to do with 
+    // how validate_team works. Its not breaking but shouldn't do this.
 
     let team_id = path_data.into_inner();
 
