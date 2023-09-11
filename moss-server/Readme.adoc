@@ -7,10 +7,11 @@ to the pull the config that will be auto generated from the website.
 
 == Flow of website
 
-=== Initial setup
+=== Initial setup page
 
-Initial setup will ask the user to list how many teams (int), what systems 
-are being monitored (Name of system OS and IP address), ask what is to be monitored for each system.
+Initial setup will ask the user to list how many teams (int), what kinds of systems 
+are being monitored (Name of system OS), ask what is to be monitored for each system
+(configs).
 
 === Main page
 
@@ -20,7 +21,7 @@ teams, and some other stuff.
 
 == Technology Used
 
-* `Yew.rs` for the frontend admin website and `trunkrs` for the hosting.
+* `Next.js` for the frontend and `Sass` for the styling.
 * `Actix-web.rs` for the backend api along with `SQLx` for communicating with the
     docker hosted MySQL database.
 * `Serde` for serializing and deserializing communications with server and client.
