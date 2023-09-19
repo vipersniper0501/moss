@@ -70,6 +70,7 @@ async fn main() -> std::io::Result<()> {
             .service(remove_team)
             .service(remove_multiple_teams)
             .service(get_teams)
+            .service(get_os)
     })
     .bind(("0.0.0.0", 4224))?
     .run()

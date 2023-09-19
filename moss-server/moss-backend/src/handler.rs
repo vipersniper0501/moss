@@ -1,16 +1,22 @@
 use actix_web::{get, post, delete, web, Responder, HttpResponse};
 use chrono::prelude::*;
 use moss_lib::{MossResults, MossData, Team};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 
 pub struct AppState {
     pub db_xpool: sqlx::Pool<sqlx::MySql>
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct OpsList {
     operating_systems: Vec<String>
+}
+
+impl OpsList {
+    fn new(os: Vec<String>) -> Self{
+        Self { operating_systems: os }
+    }
 }
 
 /// Takes a system name and compares it to the database to see if it is already
@@ -444,6 +450,22 @@ pub async fn get_teams(app_data: web::Data<AppState>) -> impl Responder {
     };
 
     HttpResponse::Ok().json(result)
+}
+
+#[get("/api/v1/os")]
+pub async fn get_os(app_data: web::Data<AppState>) -> impl Responder {
+    println!("GET /api/v1/os");
+
+    let os = match get_db_ops(&app_data).await {
+        Ok(v) => v,
+        Err(e) => {
+            return HttpResponse::InternalServerError()
+                .body(format!("Failed to get operating systems from the server: {}", e));
+        }
+    };
+    let os_data = OpsList::new(os);
+
+    HttpResponse::Ok().json(os_data)
 }
 
 #[get("/api/v1/test_response")]
