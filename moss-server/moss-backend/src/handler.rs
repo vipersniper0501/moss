@@ -454,7 +454,7 @@ pub async fn get_teams(app_data: web::Data<AppState>) -> impl Responder {
 
 #[get("/api/v1/os")]
 pub async fn get_os(app_data: web::Data<AppState>) -> impl Responder {
-    println!("GET /api/v1/os");
+    println!("{} GET /api/v1/os", Local::now().time().round_subsecs(3));
 
     let os = match get_db_ops(&app_data).await {
         Ok(v) => v,
