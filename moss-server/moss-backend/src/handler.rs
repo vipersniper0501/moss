@@ -135,7 +135,7 @@ pub async fn get_config(path_data: web::Path<String>, app_data: web::Data<AppSta
         }
     };
 
-    HttpResponse::Ok().body(result)
+    HttpResponse::Ok().json(result)
 }
 
 
@@ -278,7 +278,7 @@ pub async fn get_results(path_data: web::Path<(i32, String)>, app_data: web::Dat
         }
     };
 
-    HttpResponse::Ok().body(result)
+    HttpResponse::Ok().json(result)
 }
 
 
