@@ -1,5 +1,6 @@
 'use client';
 import useSWR from 'swr';
+import ConfigJsonPortal from './config-json';
 
 export default function OperatingSystemConfigs() {
 
@@ -12,16 +13,17 @@ export default function OperatingSystemConfigs() {
     if (error) return <p>Error occurred fetching operating systems</p>;
     if (isLoading) return <p>Loading data...</p>;
 
+    let loaded_data: string[] = data.operating_systems;
+    let formatted_data = loaded_data.map((val: string, index: number) => (
+        <div key={index}>
+            <h3>{val}</h3>
+            <ConfigJsonPortal os = {val} />
+        </div>
+    ));
 
-    // console.log(data.operating_systems[0]);
-    // console.log(data);
     return (
         <div>
-        {data.operating_systems.map((val: string, index: number) => (
-                <div key={index}>
-                    <p>{val}</p>
-                </div>
-            ))}
+        {formatted_data}
         </div>
     );
 }
