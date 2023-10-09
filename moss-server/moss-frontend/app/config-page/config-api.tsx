@@ -12,8 +12,19 @@ export type MossFileData = {
     location: string;
 };
 
-export function jsonToMossData(data: string): MossData {
+export function jsonToMossData(data: string | MossData): MossData | string {
 
+    if (data == undefined) {
+        console.log("data is undefined");
+        return "No data";
+    }
+    if (typeof data === "object") {
+        console.log("Data is an object. Returning.")
+        return data;
+    }
+    if (data == "No data") {
+        return data;
+    }
     const jsonObject: MossData = JSON.parse(data);
     var app_files: MossFileData[] = [];
     var inv_files: MossFileData[] = [];
