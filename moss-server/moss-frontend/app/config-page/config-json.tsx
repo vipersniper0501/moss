@@ -2,7 +2,7 @@
 import useSWR from 'swr';
 import React from 'react';
 import styles from './config-json.module.scss';
-import {MossData} from './config-api';
+import {MossData, jsonToMossData} from './config-api';
 import JSONPretty from 'react-json-pretty';
 
 type WrapperProps = {
@@ -11,8 +11,8 @@ type WrapperProps = {
 
 export default function ConfigJsonPortal(props: WrapperProps) {
 
-    const {data, error, isLoading} = useSWR<MossData>('http://127.0.0.1:4224/api/v1/config/' + props.os,
-    // const {data, error, isLoading} = useSWR('http://127.0.0.1:4224/api/v1/config/' + props.os,
+    // const {data, error, isLoading} = useSWR<MossData>('http://127.0.0.1:4224/api/v1/config/' + props.os,
+    const {data, error, isLoading} = useSWR('http://127.0.0.1:4224/api/v1/config/' + props.os,
                                             async (url) => {
                                                 return fetch(url, {method: 'GET'})
                                                 .then(res => res.json());
@@ -21,8 +21,15 @@ export default function ConfigJsonPortal(props: WrapperProps) {
     if (error) return <p>Error occurred fetching config data for {props.os}</p>;
     if (isLoading) return <p>Loading data...</p>;
 
+    var mossdata: MossData | string = "No data";
 
-    console.log(data);
+    if (data != undefined && data != "No data") {
+        
+        mossdata = jsonToMossData(data);
+
+        console.log(mossdata);
+
+    }
 
     return (
         <div>
@@ -30,7 +37,7 @@ export default function ConfigJsonPortal(props: WrapperProps) {
 
             </form>
             <p>Json Preview:</p>
-            <JSONPretty className={styles.json} data={data}></JSONPretty>
+            <JSONPretty className={styles.json} data={mossdata}></JSONPretty>
         </div>
     );
 }
