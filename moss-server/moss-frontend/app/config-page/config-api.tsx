@@ -12,18 +12,31 @@ export type MossFileData = {
     location: string;
 };
 
-export function jsonToMossData(data: string | MossData): MossData | string {
+export function createEmptyMossData(): MossData {
+    
+    let emptydata: MossData = {
+        server: "",
+        approved_files: [],
+        invalid_files: [],
+        valid_users: [],
+        invalid_users: []
+    };
+
+    return emptydata;
+}
+
+export function jsonToMossData(data: string): MossData {
 
     if (data == undefined) {
         console.log("data is undefined");
-        return "No data";
+        return createEmptyMossData();
     }
     if (typeof data === "object") {
         console.log("Data is an object. Returning.")
-        return data;
+        return createEmptyMossData();
     }
     if (data == "No data") {
-        return data;
+        return createEmptyMossData();
     }
     const jsonObject: MossData = JSON.parse(data);
     var app_files: MossFileData[] = [];
