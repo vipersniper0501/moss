@@ -61,6 +61,45 @@ function ConfigMossDataForm(props: MossWrapperProps) {
                 ))
             }
             </ul>
+            <label>Invalid Files:</label>
+            <ul>
+            {
+            props.data.invalid_files.map((val: MossFileData, index) => (
+                    <div key={index}>
+                    <label>Name: </label>
+                    <input 
+                        type="text" 
+                        value={val.name} 
+                        onChange={(e) => {
+                            // props.changeState(index, e.target.value);
+                            props.changeState(() => {
+                                    let updatedData: MossData = {...props.data};
+                                    updatedData.invalid_files[index].name = e.target.value;
+                                    return updatedData;
+                                });
+                    }}
+                    ></input>
+                    <ul>
+                        <label>Location: </label>
+                        <input 
+                            type="text" 
+                            value={val.location} 
+                            onChange={(e) => {
+                                // props.changeState(index, e.target.value);
+                                props.changeState(() => {
+                                        let updatedData: MossData = {...props.data};
+                                        updatedData.invalid_files[index].location = e.target.value;
+                                        return updatedData;
+                                    });
+                        }}
+                        ></input>
+                    </ul>
+                    <br></br>
+                    </div>
+                ))
+
+            }
+            </ul>
         </form>
        );
 
@@ -84,10 +123,6 @@ export default function ConfigJsonPortal(props: WrapperProps) {
 
     // const handleState = (index: number, val: string) => {
     const handleStateUpdate = (val: MossData) => {
-        // let updatedData = {...mossdata};
-        // updatedData.approved_files[index].name = val;
-        // console.log(updatedData);
-        // setMossdata(updatedData);
         setMossdata(val);
     };
 
