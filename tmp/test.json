@@ -9,6 +9,6 @@
         {"name": "passwords", "location": "/mnt/c/dev/passwords"}
     ],
     "valid_users": ["viper", "michael", "root", "micha"],
-    "invalid_users": ["jake"]
+    "invalid_users": ["jake", "root"]
 
 }
