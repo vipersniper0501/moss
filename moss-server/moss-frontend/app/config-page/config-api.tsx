@@ -32,8 +32,7 @@ export function jsonToMossData(data: string): MossData {
         return createEmptyMossData();
     }
     if (typeof data === "object") {
-        console.log("Data is an object. Returning.")
-        return createEmptyMossData();
+        return data;
     }
     if (data == "No data") {
         return createEmptyMossData();
