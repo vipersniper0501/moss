@@ -1,5 +1,4 @@
 'use client';
-import { useRouter } from 'next/navigation';
 import { TeamsList } from './components/teams-list';
 import styles from './styles/page.module.scss'
 
@@ -7,8 +6,6 @@ import styles from './styles/page.module.scss'
 
 
 export default function Home() {
-
-    const router = useRouter();
 
     return (
         <>
@@ -27,7 +24,6 @@ export default function Home() {
                 </div>
 
                 <div className={styles.teamsColumn}>
-                <button onClick={() => router.refresh()}>Reload teams</button>
                     <TeamsList />
                 </div>
             </div>
