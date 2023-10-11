@@ -3,108 +3,21 @@ import useSWR from 'swr';
 import React, {useEffect} from 'react';
 import { useState } from 'react';
 import styles from './config-json.module.scss';
-import {MossData, MossFileData, jsonToMossData, createEmptyMossData} from './config-api';
+import {MossData, jsonToMossData, createEmptyMossData} from './config-api';
 import JSONPretty from 'react-json-pretty';
+import { ConfigMossDataForm } from './config-mossdata-form';
 
 type WrapperProps = {
-    os: React.ReactNode;
+    os: string;
 };
 
-type MossWrapperProps = {
-    data: MossData;
-    changeState:any;
-}
 
-function ConfigMossDataForm(props: MossWrapperProps) {
-
-    if (JSON.stringify(props.data) == JSON.stringify(createEmptyMossData())) {
-        return <></>
-    }
-
-    return (
-        <form>
-            <label>Approved Files:</label>
-            <ul>
-            {
-            props.data.approved_files.map((val: MossFileData, index) => (
-                    <div key={index}>
-                    <label>Name: </label>
-                    <input 
-                        type="text" 
-                        value={val.name} 
-                        onChange={(e) => {
-                            // props.changeState(index, e.target.value);
-                            props.changeState(() => {
-                                    let updatedData: MossData = {...props.data};
-                                    updatedData.approved_files[index].name = e.target.value;
-                                    return updatedData;
-                                });
-                    }}
-                    ></input>
-                    <ul>
-                        <label>Location: </label>
-                        <input 
-                            type="text" 
-                            value={val.location} 
-                            onChange={(e) => {
-                                // props.changeState(index, e.target.value);
-                                props.changeState(() => {
-                                        let updatedData: MossData = {...props.data};
-                                        updatedData.approved_files[index].location = e.target.value;
-                                        return updatedData;
-                                    });
-                        }}
-                        ></input>
-                    </ul>
-                    <br></br>
-                    </div>
-                ))
-            }
-            </ul>
-            <label>Invalid Files:</label>
-            <ul>
-            {
-            props.data.invalid_files.map((val: MossFileData, index) => (
-                    <div key={index}>
-                    <label>Name: </label>
-                    <input 
-                        type="text" 
-                        value={val.name} 
-                        onChange={(e) => {
-                            // props.changeState(index, e.target.value);
-                            props.changeState(() => {
-                                    let updatedData: MossData = {...props.data};
-                                    updatedData.invalid_files[index].name = e.target.value;
-                                    return updatedData;
-                                });
-                    }}
-                    ></input>
-                    <ul>
-                        <label>Location: </label>
-                        <input 
-                            type="text" 
-                            value={val.location} 
-                            onChange={(e) => {
-                                // props.changeState(index, e.target.value);
-                                props.changeState(() => {
-                                        let updatedData: MossData = {...props.data};
-                                        updatedData.invalid_files[index].location = e.target.value;
-                                        return updatedData;
-                                    });
-                        }}
-                        ></input>
-                    </ul>
-                    <br></br>
-                    </div>
-                ))
-
-            }
-            </ul>
-        </form>
-       );
-
-}
-
+/**
+ * @param props - 
+ *  * os: string with name of the operating system
+ * @returns html with an editor for the mossdata object and a preview of the
+ * object in json form.
+ */
 export default function ConfigJsonPortal(props: WrapperProps) {
 
     const [mossdata, setMossdata] = useState<MossData>(createEmptyMossData());
