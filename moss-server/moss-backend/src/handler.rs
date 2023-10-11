@@ -294,7 +294,7 @@ pub async fn get_results(path_data: web::Path<(i32, String)>, app_data: web::Dat
         return HttpResponse::Ok().json(result);
     }
 
-    let result: MossData = match serde_json::from_str(&result) {
+    let result: MossResults = match serde_json::from_str(&result) {
         Ok(v) => v,
         Err(e) => {
            return HttpResponse::InternalServerError().body(format!("{}", e));

@@ -60,10 +60,17 @@ fn remote_mode(address: &str) {
     println!("Pulled config_data: {:#?}", config_data);
     loop {
         let result_data: MossResults = perform_checks(&config_data);
-        println!("{:#?}", result_data);
-        println!("{:#?}", serde_json::to_string(&result_data));
-        // let resp = reqwest::blocking::post()
-        todo!();
+        // println!("{:#?}", result_data);
+        // println!("{:#?}", serde_json::to_string(&result_data));
+        let mut url = "http://".to_owned();
+        url.push_str(address);
+        url.push_str("/api/v1/results/1/");
+        url.push_str(host);
+        let client = reqwest::blocking::Client::new();
+        let resp = client.post(url).json(&result_data).send().expect("Failed to send results.");
+        println!("Response code: {}", resp.status());
+        // todo!();
+        std::thread::sleep(std::time::Duration::from_secs(5));
     }
 }
 
