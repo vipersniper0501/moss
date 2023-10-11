@@ -13,7 +13,8 @@ export function TeamsList() {
                                                 .then(res => res.json());
                                             });
 
-    if (error) return <p>Error occurred</p>;
+    if (error) return <p>Error occurred fetching teams. Are you sure both the
+                        backend and docker database are running?</p>;
 
     if (isLoading) {
         return <p>Loading teams...</p>;
