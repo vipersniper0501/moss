@@ -22,7 +22,7 @@ fn local_mode(path: &str) {
 
 /// Gets config from a remote server then runs the perform_checks
 /// function to begin
-fn remote_mode(address: &str) {
+fn remote_mode(address: &str, teamid: String) {
 
     
     let binding = gethostname();
@@ -64,7 +64,9 @@ fn remote_mode(address: &str) {
         // println!("{:#?}", serde_json::to_string(&result_data));
         let mut url = "http://".to_owned();
         url.push_str(address);
-        url.push_str("/api/v1/results/1/");
+        url.push_str("/api/v1/results/");
+        url.push_str(teamid.as_str());
+        url.push('/');
         url.push_str(host);
         let client = reqwest::blocking::Client::new();
         let resp = client.post(url).json(&result_data).send().expect("Failed to send results.");
@@ -76,7 +78,7 @@ fn remote_mode(address: &str) {
 
 fn print_usage() {
     println!("Usage:\tmoss-client [-L | --local] <path to local config>\n\t
-        Or\n\tmoss-client [-R | --remote] <IP/Url of remote server>");
+        Or\n\tmoss-client [-R | --remote] <IP/Url of remote server> <teamid>");
 }
 
 /// Remote Mode attempts to form connection with server.
@@ -90,7 +92,7 @@ fn print_usage() {
 ///     - Post checks to server
 ///     - repeat
 fn main() {
-    if std::env::args().len() != 3 {
+    if std::env::args().len() < 3 {
         print_usage();
         std::process::exit(1);
     } 
@@ -126,7 +128,15 @@ fn main() {
         },
         "-R" | "--remote" => {
             println!("Running moss-client in Remote Mode.");
-            remote_mode(mode_argument.as_str());
+            let teamid = match std::env::args().nth(3) {
+                Some(v) => v,
+                None => {
+                    println!("Missing team id.");
+                    print_usage();
+                    std::process::exit(1);
+                }
+            };
+            remote_mode(mode_argument.as_str(), teamid);
         },
         _ => {
             println!("Invalid arguments");
