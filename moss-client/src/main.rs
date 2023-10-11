@@ -1,4 +1,5 @@
 use std::fs;
+use reqwest::{self};
 
 pub mod linux;
 use linux::*;
@@ -20,8 +21,38 @@ fn local_mode(path: &str) {
 
 /// Gets config from a remote server then runs the perform_checks
 /// function to begin
-fn remote_mode(address: &str) {
-    todo!()
+fn remote_mode(address: &str) -> Result<(), Box<dyn std::error::Error>> {
+
+    println!("Address: {}", address);
+    let mut url: String = "http://".to_owned();
+    url.push_str(address);
+    url.push_str("/api/v1/config/Ubuntu_18.04");
+    // let config_data: MossData = reqwest::blocking::get(url)?.json()?;
+
+    let config_data: MossData = match reqwest::blocking::get(url) {
+        Ok(v) => {
+            match v.json() {
+                Ok(v) => v,
+                Err(e) => {
+                    eprintln!("Failed to parse data: {}", e);
+                    std::process::exit(1);
+                }
+            }
+        },
+        Err(e) => {
+            eprintln!("Failed to reach server: {}\nerror: {}", address, e);
+            std::process::exit(1);
+        }
+    };
+
+    println!("Pulled config_data: {:#?}", config_data);
+    loop {
+        let result_data: MossResults = perform_checks(&config_data);
+        println!("{:#?}", result_data);
+        println!("{:#?}", serde_json::to_string(&result_data));
+        // let resp = reqwest::blocking::post()
+        todo!();
+    }
 }
 
 fn print_usage() {
