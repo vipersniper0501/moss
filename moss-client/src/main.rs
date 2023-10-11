@@ -35,9 +35,10 @@ fn remote_mode(address: &str, teamid: String) {
     };
     println!("Hostname: {}", host);
     println!("\n\nAddress: {}", address);
+
+    // Build url
     let mut url: String = "http://".to_owned();
     url.push_str(address);
-    //FIXME: This needs to be platform agnostic
     url.push_str("/api/v1/config/");
     url.push_str(host);
 
@@ -60,18 +61,22 @@ fn remote_mode(address: &str, teamid: String) {
     println!("Pulled config_data: {:#?}", config_data);
     loop {
         let result_data: MossResults = perform_checks(&config_data);
-        // println!("{:#?}", result_data);
-        // println!("{:#?}", serde_json::to_string(&result_data));
+
+        // Build the url
         let mut url = "http://".to_owned();
         url.push_str(address);
         url.push_str("/api/v1/results/");
         url.push_str(teamid.as_str());
         url.push('/');
         url.push_str(host);
+
+        // Send the results to the server
         let client = reqwest::blocking::Client::new();
         let resp = client.post(url).json(&result_data).send().expect("Failed to send results.");
+
         println!("Response code: {}", resp.status());
-        // todo!();
+
+        // Delay
         std::thread::sleep(std::time::Duration::from_secs(5));
     }
 }
