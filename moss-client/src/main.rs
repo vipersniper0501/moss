@@ -1,4 +1,5 @@
 use std::fs;
+use gethostname::gethostname;
 use reqwest::{self};
 
 pub mod linux;
@@ -21,13 +22,24 @@ fn local_mode(path: &str) {
 
 /// Gets config from a remote server then runs the perform_checks
 /// function to begin
-fn remote_mode(address: &str) -> Result<(), Box<dyn std::error::Error>> {
+fn remote_mode(address: &str) {
 
-    println!("Address: {}", address);
+    
+    let binding = gethostname();
+    let host = match binding.to_str() {
+        Some(v) => v,
+        None => {
+            eprintln!("Failed to get hostname.");
+            std::process::exit(1);
+        }
+    };
+    println!("Hostname: {}", host);
+    println!("\n\nAddress: {}", address);
     let mut url: String = "http://".to_owned();
     url.push_str(address);
-    url.push_str("/api/v1/config/Ubuntu_18.04");
-    // let config_data: MossData = reqwest::blocking::get(url)?.json()?;
+    //FIXME: This needs to be platform agnostic
+    url.push_str("/api/v1/config/");
+    url.push_str(host);
 
     let config_data: MossData = match reqwest::blocking::get(url) {
         Ok(v) => {
