@@ -6,7 +6,7 @@ export default function Config() {
 
     return (
         <div className={styles.content}>
-            <h2>OS Configs</h2>
+            <h2>System Configs</h2>
             <OperatingSystemConfigs />
         </div>
     );

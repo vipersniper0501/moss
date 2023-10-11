@@ -9,13 +9,13 @@ pub struct AppState {
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct OpsList {
-    operating_systems: Vec<String>
+pub struct SystemsList {
+    systems: Vec<String>
 }
 
-impl OpsList {
-    fn new(os: Vec<String>) -> Self{
-        Self { operating_systems: os }
+impl SystemsList {
+    fn new(system: Vec<String>) -> Self{
+        Self { systems: system }
     }
 }
 
@@ -309,7 +309,7 @@ pub async fn get_results(path_data: web::Path<(i32, String)>, app_data: web::Dat
 // Note: This should only be called once when first setting up admin dashboard.
 #[post("/api/v1/teams/{amount}")]
 pub async fn create_teams(path_data: web::Path<i32>, app_data: web::Data<AppState>,
-    ops_list: web::Json<OpsList>) -> impl Responder {
+    ops_list: web::Json<SystemsList>) -> impl Responder {
 
     let amount = path_data.into_inner();
 
@@ -322,7 +322,7 @@ pub async fn create_teams(path_data: web::Path<i32>, app_data: web::Data<AppStat
                 .body(format!("Failed to get number of teams from database: {}", e));
         }
     };
-    let ops: Vec<String> = ops_list.into_inner().operating_systems;
+    let ops: Vec<String> = ops_list.into_inner().systems;
 
     let pool = app_data.db_xpool.clone();
 
@@ -476,20 +476,20 @@ pub async fn get_teams(app_data: web::Data<AppState>) -> impl Responder {
     HttpResponse::Ok().json(result)
 }
 
-#[get("/api/v1/os")]
-pub async fn get_os(app_data: web::Data<AppState>) -> impl Responder {
-    println!("{} GET /api/v1/os", Local::now().time().round_subsecs(3));
+#[get("/api/v1/systems")]
+pub async fn get_systems(app_data: web::Data<AppState>) -> impl Responder {
+    println!("{} GET /api/v1/systems", Local::now().time().round_subsecs(3));
 
-    let os = match get_db_ops(&app_data).await {
+    let system = match get_db_ops(&app_data).await {
         Ok(v) => v,
         Err(e) => {
             return HttpResponse::InternalServerError()
                 .body(format!("Failed to get operating systems from the server: {}", e));
         }
     };
-    let os_data = OpsList::new(os);
+    let system_data = SystemsList::new(system);
 
-    HttpResponse::Ok().json(os_data)
+    HttpResponse::Ok().json(system_data)
 }
 
 #[get("/api/v1/test_response")]

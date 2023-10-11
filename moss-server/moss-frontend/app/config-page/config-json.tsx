@@ -8,7 +8,7 @@ import JSONPretty from 'react-json-pretty';
 import { ConfigMossDataForm } from './config-mossdata-form';
 
 type WrapperProps = {
-    os: string;
+    system: string;
 };
 
 
@@ -22,7 +22,7 @@ export default function ConfigJsonPortal(props: WrapperProps) {
 
     const [mossdata, setMossdata] = useState<MossData>(createEmptyMossData());
 
-    const {data, error, isLoading} = useSWR('http://127.0.0.1:4224/api/v1/config/' + props.os,
+    const {data, error, isLoading} = useSWR('http://127.0.0.1:4224/api/v1/config/' + props.system,
                                             async (url) => {
                                                 return fetch(url, {method: 'GET'})
                                                 .then(res => res.json());
@@ -39,11 +39,11 @@ export default function ConfigJsonPortal(props: WrapperProps) {
         setMossdata(val);
     };
 
-    if (error) return <p>Error occurred fetching config data for {props.os}</p>;
+    if (error) return <p>Error occurred fetching config data for {props.system}</p>;
     if (isLoading) return <p>Loading data...</p>;
     return (
         <div>
-            <ConfigMossDataForm data={mossdata} changeState={handleStateUpdate} os={props.os}></ConfigMossDataForm>
+            <ConfigMossDataForm data={mossdata} changeState={handleStateUpdate} system={props.system}></ConfigMossDataForm>
             <p>Json Preview:</p>
             <JSONPretty className={styles.json} data={mossdata}></JSONPretty>
         </div>
