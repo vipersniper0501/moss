@@ -6,6 +6,7 @@ import {MossData, MossFileData, createEmptyMossData} from './config-api';
 type MossWrapperProps = {
     data: MossData;
     changeState:any;
+    os: string;
 }
 
 /**
@@ -19,6 +20,21 @@ export function ConfigMossDataForm(props: MossWrapperProps) {
     if (JSON.stringify(props.data) == JSON.stringify(createEmptyMossData())) {
         return <></>
     }
+
+    const updateDatabase = (updatedData: MossData) => {
+        console.log(updatedData);
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        fetch('http://127.0.0.1:4224/api/v1/config/' + props.os,
+            {
+                method: 'PUT',
+                headers: myHeaders,
+                body: JSON.stringify(updatedData)
+            })
+            .then(res => res.text())
+            .catch(error => console.log('error', error));
+    };
 
     return (
         <form>
@@ -145,6 +161,7 @@ export function ConfigMossDataForm(props: MossWrapperProps) {
                 ))
             }
             </ul>
+            <button type="button" onClick={(_e) => {updateDatabase(props.data)}}>Save</button>
         </form>
        );
 

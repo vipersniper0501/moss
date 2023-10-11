@@ -43,7 +43,7 @@ export default function ConfigJsonPortal(props: WrapperProps) {
     if (isLoading) return <p>Loading data...</p>;
     return (
         <div>
-            <ConfigMossDataForm data={mossdata} changeState={handleStateUpdate}></ConfigMossDataForm>
+            <ConfigMossDataForm data={mossdata} changeState={handleStateUpdate} os={props.os}></ConfigMossDataForm>
             <p>Json Preview:</p>
             <JSONPretty className={styles.json} data={mossdata}></JSONPretty>
         </div>

@@ -1,4 +1,4 @@
-use actix_web::{get, post, delete, web, Responder, HttpResponse};
+use actix_web::{get, post, put, delete, web, Responder, HttpResponse};
 use chrono::prelude::*;
 use moss_lib::{MossResults, MossData, Team};
 use serde::{Deserialize, Serialize};
@@ -64,12 +64,12 @@ async fn validate_team(team_id: i32, app_data: &web::Data<AppState>) -> Result<(
 
 /// API Call to update the configs for a specified operating system in the 
 /// database
-#[post("/api/v1/config/{system}")]
+#[put("/api/v1/config/{system}")]
 pub async fn update_config(path_data: web::Path<String>, app_data: web::Data<AppState>,
 config: web::Json<MossData>) -> impl Responder {
     let system = path_data.into_inner();
 
-    println!("{} POST /api/v1/config/{}", Local::now().time().round_subsecs(3),system);
+    println!("{} PUT /api/v1/config/{}", Local::now().time().round_subsecs(3),system);
 
     if let Err(response) = validate_system(&system, &app_data).await {
         return response;
