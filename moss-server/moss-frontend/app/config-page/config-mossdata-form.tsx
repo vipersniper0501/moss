@@ -55,7 +55,6 @@ export function ConfigMossDataForm(props: MossWrapperProps) {
                         }}
                         ></input>
                     </ul>
-                    <br></br>
                     </div>
                 ))
             }
@@ -93,10 +92,57 @@ export function ConfigMossDataForm(props: MossWrapperProps) {
                         }}
                         ></input>
                     </ul>
-                    <br></br>
                     </div>
                 ))
 
+            }
+            </ul>
+            <label>Valid Users:</label>
+            <ul>
+            {
+                props.data.valid_users.map((val: string, index: number) => (
+                    <div key={index}>
+                        <ul>
+                            <label>Name: </label>
+                            <input 
+                                type="text" 
+                                value={val}
+                                onChange={(e) => {
+                                props.changeState(() => {
+                                        let updatedData: MossData = {...props.data};
+                                        updatedData.valid_users[index] = e.target.value;
+                                        return updatedData;
+                                    });
+                                }}
+                                ></input>
+                                <br></br>
+                        </ul>
+                    </div>
+                ))
+            }
+            </ul>
+            <label>Invalid Users:</label>
+            <ul>
+            {
+                props.data.invalid_users.map((val: string, index: number) => (
+                    <div key={index}>
+                        <ul>
+                            <label>Name: </label>
+                            <input 
+                                type="text" 
+                                value={val}
+                                onChange={(e) => {
+                                props.changeState(() => {
+                                        let updatedData: MossData = {...props.data};
+                                        updatedData.invalid_users[index] = e.target.value;
+                                        return updatedData;
+                                    });
+                                }}
+                            ></input>
+                            <br></br>
+                        </ul>
+                    </div>
+                ))
             }
             </ul>
         </form>
