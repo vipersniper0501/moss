@@ -19,6 +19,7 @@ pub fn perform_checks(config_data: &MossData) -> MossResults {
     results = detect_valid_users(&config_data, results);
 
     // Invalid Users
+    results = detect_invalid_users(&config_data, results);
 
     return results;
 }
@@ -127,7 +128,6 @@ fn list_users() -> Vec<LinuxUserData> {
 fn detect_valid_users(config_data: &MossData, mut results: MossResults) -> MossResults {
     let local_users: Vec<LinuxUserData> = list_users();
     for user in config_data.valid_users.iter() {
-
         // false_flag is used as a flag that goes off if there was no user 
         // matching a user in the config.
         let mut false_flag = false;
@@ -146,12 +146,31 @@ fn detect_valid_users(config_data: &MossData, mut results: MossResults) -> MossR
             results.valid_users.push(false);
         }
     }
-
     return results;
 }
 
-fn _detect_invalid_users() {
+fn detect_invalid_users(config_data: &MossData, mut results: MossResults) -> MossResults {
+    let local_users: Vec<LinuxUserData> = list_users();
 
+    for user in config_data.invalid_users.iter() {
+        let mut false_flag = false;
+
+        for l in local_users.iter() {
+            if l.name == user.to_owned() {
+                results.invalid_users.push(true);
+                false_flag = false;
+                break;
+            }
+            else {
+                false_flag = true;
+            }
+        }
+        if false_flag {
+            results.invalid_users.push(false);
+        }
+    }
+    
+    return results;
 }
 
 
