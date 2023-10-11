@@ -135,6 +135,18 @@ pub async fn get_config(path_data: web::Path<String>, app_data: web::Data<AppSta
         }
     };
 
+    if result == "No data" {
+        return HttpResponse::Ok().json(result);
+    }
+
+    let result: MossData = match serde_json::from_str(&result) {
+        Ok(v) => v,
+        Err(e) => {
+           return HttpResponse::InternalServerError().body(format!("{}", e));
+        }
+
+    };
+
     HttpResponse::Ok().json(result)
 }
 
@@ -276,6 +288,18 @@ pub async fn get_results(path_data: web::Path<(i32, String)>, app_data: web::Dat
             return HttpResponse::InternalServerError()
                 .body(format!("get_results: Failed to execute query on database: {}", e));
         }
+    };
+
+    if result == "No data" {
+        return HttpResponse::Ok().json(result);
+    }
+
+    let result: MossData = match serde_json::from_str(&result) {
+        Ok(v) => v,
+        Err(e) => {
+           return HttpResponse::InternalServerError().body(format!("{}", e));
+        }
+
     };
 
     HttpResponse::Ok().json(result)
