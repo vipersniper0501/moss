@@ -34,7 +34,7 @@ fn remote_mode(address: &str, teamid: String) {
         }
     };
     println!("Hostname: {}", host);
-    println!("\n\nAddress: {}", address);
+    println!("\nAddress: {}", address);
 
     // Build url
     let mut url: String = "http://".to_owned();
@@ -132,7 +132,7 @@ fn main() {
             local_mode(mode_argument.as_str());
         },
         "-R" | "--remote" => {
-            println!("Running moss-client in Remote Mode.");
+            println!("\nRunning moss-client in Remote Mode.");
             let teamid = match std::env::args().nth(3) {
                 Some(v) => v,
                 None => {
