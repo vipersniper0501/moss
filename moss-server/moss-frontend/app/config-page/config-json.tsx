@@ -42,10 +42,12 @@ export default function ConfigJsonPortal(props: WrapperProps) {
     if (error) return <p>Error occurred fetching config data for {props.system}</p>;
     if (isLoading) return <p>Loading data...</p>;
     return (
-        <div>
+        <div className={styles.hostBox}>
             <ConfigMossDataForm data={mossdata} changeState={handleStateUpdate} system={props.system}></ConfigMossDataForm>
-            <p>Json Preview:</p>
-            <JSONPretty className={styles.json} data={mossdata}></JSONPretty>
+            <div className={styles.jsonView}>
+                <p>Json Preview:</p>
+                <JSONPretty className={styles.json} data={mossdata}></JSONPretty>
+            </div>
         </div>
     );
 }

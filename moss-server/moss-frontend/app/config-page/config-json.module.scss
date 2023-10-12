@@ -7,3 +7,16 @@
     border-width: 1px;
     width: 400px;
 }
+
+.hostBox {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.configEditor {
+}
+
+.jsonView {
+    margin-left: 40px;
+}

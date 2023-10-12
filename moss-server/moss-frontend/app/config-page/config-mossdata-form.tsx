@@ -37,7 +37,7 @@ export function ConfigMossDataForm(props: MossWrapperProps) {
     };
 
     return (
-        <form>
+        <form className={styles.configEditor}>
             <label>Approved Files:</label>
             <ul>
             {
