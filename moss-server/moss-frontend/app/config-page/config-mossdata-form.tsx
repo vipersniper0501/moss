@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, {useRef} from 'react';
 import styles from './config-json.module.scss';
 import {MossData, MossFileData, createEmptyMossData} from './config-api';
 
@@ -17,9 +17,10 @@ type MossWrapperProps = {
  */
 export function ConfigMossDataForm(props: MossWrapperProps) {
 
-    if (JSON.stringify(props.data) == JSON.stringify(createEmptyMossData())) {
-        return <></>
-    }
+
+    // if (JSON.stringify(props.data) == JSON.stringify(createEmptyMossData())) {
+        // return <></>
+    // }
 
     const updateDatabase = (updatedData: MossData) => {
         console.log(updatedData);
@@ -37,7 +38,7 @@ export function ConfigMossDataForm(props: MossWrapperProps) {
     };
 
     return (
-        <form className={styles.configEditor}>
+        <form>
             <label>Approved Files:</label>
             <ul>
             {
@@ -74,6 +75,14 @@ export function ConfigMossDataForm(props: MossWrapperProps) {
                     </div>
                 ))
             }
+                <input type="button" value="Add File" onClick={() => {
+                    props.changeState(() => {
+                            let updatedData: MossData = {...props.data};
+                            let newFile: MossFileData = {name: "", location: ""};
+                            updatedData.approved_files.push(newFile);
+                            return updatedData;
+                        })
+                }}></input>
             </ul>
             <label>Invalid Files:</label>
             <ul>
@@ -112,13 +121,20 @@ export function ConfigMossDataForm(props: MossWrapperProps) {
                 ))
 
             }
+                <input type="button" value="Add File" onClick={() => {
+                    props.changeState(() => {
+                            let updatedData: MossData = {...props.data};
+                            let newFile: MossFileData = {name: "", location: ""};
+                            updatedData.invalid_files.push(newFile);
+                            return updatedData;
+                        })
+                }}></input>
             </ul>
             <label>Valid Users:</label>
             <ul>
             {
                 props.data.valid_users.map((val: string, index: number) => (
                     <div key={index}>
-                        <ul>
                             <label>Name: </label>
                             <input 
                                 type="text" 
@@ -132,17 +148,23 @@ export function ConfigMossDataForm(props: MossWrapperProps) {
                                 }}
                                 ></input>
                                 <br></br>
-                        </ul>
                     </div>
                 ))
             }
+                <input type="button" value="Add User" onClick={() => {
+                    props.changeState(() => {
+                            let updatedData: MossData = {...props.data};
+                            let newUser: string = "";
+                            updatedData.valid_users.push(newUser);
+                            return updatedData;
+                        })
+                }}></input>
             </ul>
             <label>Invalid Users:</label>
             <ul>
             {
                 props.data.invalid_users.map((val: string, index: number) => (
                     <div key={index}>
-                        <ul>
                             <label>Name: </label>
                             <input 
                                 type="text" 
@@ -156,10 +178,17 @@ export function ConfigMossDataForm(props: MossWrapperProps) {
                                 }}
                             ></input>
                             <br></br>
-                        </ul>
                     </div>
                 ))
             }
+                <input type="button" value="Add User" onClick={() => {
+                    props.changeState(() => {
+                            let updatedData: MossData = {...props.data};
+                            let newUser: string = "";
+                            updatedData.invalid_users.push(newUser);
+                            return updatedData;
+                        })
+                }}></input>
             </ul>
             <button type="button" onClick={(_e) => {updateDatabase(props.data)}}>Save</button>
         </form>

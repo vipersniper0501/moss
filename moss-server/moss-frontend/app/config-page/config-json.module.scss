@@ -12,11 +12,17 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
+
+    .jsonView {
+        margin-left: 40px;
+    }
+
+    .addInput {
+        margin-top: 15px;
+        margin-right: 5px;
+        vertical-align: bottom;
+    }
 }
 
-.configEditor {
-}
 
-.jsonView {
-    margin-left: 40px;
-}
+

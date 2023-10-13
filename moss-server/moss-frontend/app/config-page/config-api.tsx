@@ -15,7 +15,7 @@ export type MossFileData = {
 export function createEmptyMossData(): MossData {
     
     let emptydata: MossData = {
-        server: "",
+        server: "127.0.0.1",
         approved_files: [],
         invalid_files: [],
         valid_users: [],
