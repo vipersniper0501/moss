@@ -6,6 +6,7 @@
     border-radius: 5px;
     border-width: 1px;
     width: 400px;
+    overflow: scroll;
 }
 
 .hostBox {
@@ -24,5 +25,17 @@
     }
 }
 
+.editorBox {
+    position: relative;
+    margin-bottom: 25px;
+    z-index: 0;
+}
 
+.deleteButton {
+    position: absolute;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    right: 0px;
+    z-index: 1;
+}
 

@@ -1,7 +1,7 @@
 'use client';
-import React, {useRef} from 'react';
+import React from 'react';
 import styles from './config-json.module.scss';
-import {MossData, MossFileData, createEmptyMossData} from './config-api';
+import {MossData, MossFileData} from './config-api';
 
 type MossWrapperProps = {
     data: MossData;
@@ -16,11 +16,6 @@ type MossWrapperProps = {
  * @returns an html form that allows you to edit mossdata
  */
 export function ConfigMossDataForm(props: MossWrapperProps) {
-
-
-    // if (JSON.stringify(props.data) == JSON.stringify(createEmptyMossData())) {
-        // return <></>
-    // }
 
     const updateDatabase = (updatedData: MossData) => {
         console.log(updatedData);
@@ -43,35 +38,43 @@ export function ConfigMossDataForm(props: MossWrapperProps) {
             <ul>
             {
             props.data.approved_files.map((val: MossFileData, index) => (
-                    <div key={index}>
-                    <label>Name: </label>
-                    <input 
-                        type="text" 
-                        value={val.name} 
-                        onChange={(e) => {
-                            // props.changeState(index, e.target.value);
-                            props.changeState(() => {
-                                    let updatedData: MossData = {...props.data};
-                                    updatedData.approved_files[index].name = e.target.value;
-                                    return updatedData;
-                                });
-                    }}
-                    ></input>
-                    <ul>
+                    <div key={index} className={styles.editorBox}>
+                        <label>Name: </label>
+                        <input 
+                            type="text" 
+                            value={val.name} 
+                            onChange={(e) => {
+                                props.changeState(() => {
+                                        let updatedData: MossData = {...props.data};
+                                        updatedData.approved_files[index].name = e.target.value;
+                                        return updatedData;
+                                    });
+                        }}
+                        ></input>
+                        <br></br>
                         <label>Location: </label>
                         <input 
                             type="text" 
                             value={val.location} 
                             onChange={(e) => {
-                                // props.changeState(index, e.target.value);
                                 props.changeState(() => {
                                         let updatedData: MossData = {...props.data};
                                         updatedData.approved_files[index].location = e.target.value;
                                         return updatedData;
                                     });
                         }}
-                        ></input>
-                    </ul>
+                        ></input><br></br>
+                        <input 
+                            type="button" 
+                            value="Delete" 
+                            className={styles.deleteButton}
+                            onClick={() => {
+                                props.changeState(() => {
+                                    let updatedData: MossData = {...props.data};
+                                    updatedData.approved_files.splice(index, 1);
+                                    return updatedData;
+                                    });
+                        }}></input>
                     </div>
                 ))
             }
@@ -88,35 +91,43 @@ export function ConfigMossDataForm(props: MossWrapperProps) {
             <ul>
             {
             props.data.invalid_files.map((val: MossFileData, index) => (
-                    <div key={index}>
+                    <div key={index} className={styles.editorBox}>
                     <label>Name: </label>
                     <input 
                         type="text" 
                         value={val.name} 
                         onChange={(e) => {
-                            // props.changeState(index, e.target.value);
                             props.changeState(() => {
                                     let updatedData: MossData = {...props.data};
                                     updatedData.invalid_files[index].name = e.target.value;
                                     return updatedData;
                                 });
                     }}
-                    ></input>
-                    <ul>
-                        <label>Location: </label>
-                        <input 
-                            type="text" 
-                            value={val.location} 
-                            onChange={(e) => {
-                                // props.changeState(index, e.target.value);
-                                props.changeState(() => {
-                                        let updatedData: MossData = {...props.data};
-                                        updatedData.invalid_files[index].location = e.target.value;
-                                        return updatedData;
-                                    });
-                        }}
-                        ></input>
-                    </ul>
+                    ></input> 
+                    <br></br>
+                    <label>Location: </label>
+                    <input 
+                        type="text" 
+                        value={val.location} 
+                        onChange={(e) => {
+                            props.changeState(() => {
+                                    let updatedData: MossData = {...props.data};
+                                    updatedData.invalid_files[index].location = e.target.value;
+                                    return updatedData;
+                                });
+                    }}
+                    ></input><br></br>
+                    <input 
+                        type="button" 
+                        value="Delete" 
+                        className={styles.deleteButton}
+                        onClick={() => {
+                            props.changeState(() => {
+                                let updatedData: MossData = {...props.data};
+                                updatedData.invalid_files.splice(index, 1);
+                                return updatedData;
+                                });
+                    }}></input>
                     </div>
                 ))
 
@@ -134,7 +145,7 @@ export function ConfigMossDataForm(props: MossWrapperProps) {
             <ul>
             {
                 props.data.valid_users.map((val: string, index: number) => (
-                    <div key={index}>
+                    <div key={index} className={styles.editorBox}>
                             <label>Name: </label>
                             <input 
                                 type="text" 
@@ -148,6 +159,17 @@ export function ConfigMossDataForm(props: MossWrapperProps) {
                                 }}
                                 ></input>
                                 <br></br>
+                    <input 
+                        type="button" 
+                        value="Delete" 
+                        className={styles.deleteButton}
+                        onClick={() => {
+                            props.changeState(() => {
+                                let updatedData: MossData = {...props.data};
+                                updatedData.valid_users.splice(index, 1);
+                                return updatedData;
+                                });
+                    }}></input>
                     </div>
                 ))
             }
@@ -164,7 +186,7 @@ export function ConfigMossDataForm(props: MossWrapperProps) {
             <ul>
             {
                 props.data.invalid_users.map((val: string, index: number) => (
-                    <div key={index}>
+                    <div key={index} className={styles.editorBox}>
                             <label>Name: </label>
                             <input 
                                 type="text" 
@@ -178,6 +200,17 @@ export function ConfigMossDataForm(props: MossWrapperProps) {
                                 }}
                             ></input>
                             <br></br>
+                    <input 
+                        type="button" 
+                        value="Delete" 
+                        className={styles.deleteButton}
+                        onClick={() => {
+                            props.changeState(() => {
+                                let updatedData: MossData = {...props.data};
+                                updatedData.invalid_users.splice(index, 1);
+                                return updatedData;
+                                });
+                    }}></input>
                     </div>
                 ))
             }
