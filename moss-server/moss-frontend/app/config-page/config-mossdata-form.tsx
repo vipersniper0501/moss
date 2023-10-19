@@ -5,7 +5,7 @@ import {MossData, MossFileData} from './config-api';
 
 type MossWrapperProps = {
     data: MossData;
-    changeState:any;
+    changeState: any;
     system: string;
 }
 
