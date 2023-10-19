@@ -47,7 +47,8 @@ async fn main() -> std::io::Result<()> {
         let cors = Cors::default()
             // Allows connection from local only frontend
             // Need to figure out way to accept from other server locations...
-            .allowed_origin("http://127.0.0.1:4223")
+            // .allowed_origin("http://127.0.0.1:4223")
+            .allow_any_origin()
             .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
             .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
             .allowed_header(header::CONTENT_TYPE)
