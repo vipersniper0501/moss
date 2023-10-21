@@ -11,6 +11,48 @@ pub mod handler;
 
 use handler::*;
 
+fn generate_cors() -> Cors {
+    Cors::default()
+        // Allows connection from local only frontend
+        // Need to figure out way to accept from other server locations...
+        .allow_any_origin()
+        .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
+        .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
+        .allowed_header(header::CONTENT_TYPE)
+        .max_age(3600)
+}
+
+fn load_rustls_config() -> rustls::ServerConfig {
+    // init server config builder with safe defaults
+    let config = ServerConfig::builder()
+        .with_safe_defaults()
+        .with_no_client_auth();
+
+    // load TLS key/cert files
+    let cert_file = &mut BufReader::new(File::open("certificates/cert.pem").unwrap());
+    let key_file = &mut BufReader::new(File::open("certificates/key.pem").unwrap());
+
+    // convert files to key/cert objects
+    let cert_chain = certs(cert_file)
+        .unwrap()
+        .into_iter()
+        .map(Certificate)
+        .collect();
+    let mut keys: Vec<PrivateKey> = pkcs8_private_keys(key_file)
+        .unwrap()
+        .into_iter()
+        .map(PrivateKey)
+        .collect();
+
+    // exit if no keys could be parsed
+    if keys.is_empty() {
+        eprintln!("Could not locate PKCS 8 private keys.");
+        std::process::exit(1);
+    }
+
+    config.with_single_cert(cert_chain, keys.remove(0)).unwrap()
+}
+
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -43,22 +85,11 @@ async fn main() -> std::io::Result<()> {
             }
         };
 
-    let config = load_rustls_config();
 
-    println!("Listening on http://127.0.0.1:4224");
 
-    HttpServer::new(move || {
-        let xpool = xpool.clone();
-        let cors = Cors::default()
-            // Allows connection from local only frontend
-            // Need to figure out way to accept from other server locations...
-            .allow_any_origin()
-            .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
-            .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
-            .allowed_header(header::CONTENT_TYPE)
-            .max_age(3600);
+    // closure to create new app
+    let app = |xpool| {
         App::new()
-            .wrap(cors)
             .app_data(web::Data::new(AppState {
                 db_xpool: xpool
             }))
@@ -72,41 +103,37 @@ async fn main() -> std::io::Result<()> {
             .service(remove_multiple_teams)
             .service(get_teams)
             .service(get_systems)
-    })
-    // .bind(("0.0.0.0", 4224))?
-    .bind_rustls_021("0.0.0.0:4224", config)?
-    .run()
-    .await
-}
+    };
 
+    let args: Vec<String> = std::env::args().collect();
+    let uflag: String = "--unsecure".to_string();
+    let unsecure_flag: bool = args.contains(&uflag);
 
-fn load_rustls_config() -> rustls::ServerConfig {
-    // init server config builder with safe defaults
-    let config = ServerConfig::builder()
-        .with_safe_defaults()
-        .with_no_client_auth();
-
-    // load TLS key/cert files
-    let cert_file = &mut BufReader::new(File::open("certificates/cert.pem").unwrap());
-    let key_file = &mut BufReader::new(File::open("certificates/key.pem").unwrap());
-
-    // convert files to key/cert objects
-    let cert_chain = certs(cert_file)
-        .unwrap()
-        .into_iter()
-        .map(Certificate)
-        .collect();
-    let mut keys: Vec<PrivateKey> = pkcs8_private_keys(key_file)
-        .unwrap()
-        .into_iter()
-        .map(PrivateKey)
-        .collect();
-
-    // exit if no keys could be parsed
-    if keys.is_empty() {
-        eprintln!("Could not locate PKCS 8 private keys.");
-        std::process::exit(1);
+    if unsecure_flag {
+        println!("Listening on http://127.0.0.1:4224");
+        HttpServer::new(move || {
+            let xpool = xpool.clone();
+            let cors = generate_cors();
+            let app = app(xpool);
+            return app.wrap(cors);
+        })
+        .bind(("0.0.0.0", 4224))?
+        .run()
+        .await
     }
+    else {
+        let config = load_rustls_config();
 
-    config.with_single_cert(cert_chain, keys.remove(0)).unwrap()
+        println!("Listening on https://127.0.0.1:4224");
+        HttpServer::new(move || {
+            let xpool = xpool.clone();
+            let cors = generate_cors();
+            let app = app(xpool);
+            return app.wrap(cors);
+        })
+        .bind_rustls_021("0.0.0.0:4224", config)?
+        .run()
+        .await
+
+    }
 }
