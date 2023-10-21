@@ -1,0 +1,9 @@
+
+How to create certs for moss-backend:
+
+In the moss-backend folder, run the following command:
+`mkcert -key-file key.pem -cert-file cert.pem 127.0.0.1 localhost`
+
+This command creates a cert and key file in the certificates directory. 
+These are self-signed certs that should be able to be replaced with whatever
+certs you want to use. 
