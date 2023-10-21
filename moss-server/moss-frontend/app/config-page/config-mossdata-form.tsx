@@ -22,7 +22,7 @@ export function ConfigMossDataForm(props: MossWrapperProps) {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
-        fetch('http://' + location.hostname + ':4224/api/v1/config/' + props.system,
+        fetch('https://' + location.hostname + ':4224/api/v1/config/' + props.system,
             {
                 method: 'PUT',
                 headers: myHeaders,

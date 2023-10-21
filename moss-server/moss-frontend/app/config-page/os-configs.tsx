@@ -4,7 +4,7 @@ import ConfigJsonPortal from './config-json';
 
 export default function OperatingSystemConfigs() {
 
-    const {data, error, isLoading} = useSWR('http://127.0.0.1:4224/api/v1/systems',
+    const {data, error, isLoading} = useSWR('https://' + location.hostname + ':4224/api/v1/systems',
                                             async (url) => {
                                                 return fetch(url, {method: 'GET'})
                                                 .then(res => res.json());
