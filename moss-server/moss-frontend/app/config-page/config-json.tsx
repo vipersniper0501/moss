@@ -22,7 +22,8 @@ export default function ConfigJsonPortal(props: WrapperProps) {
 
     const [mossdata, setMossdata] = useState<MossData>(createEmptyMossData());
 
-    const {data, error, isLoading} = useSWR('https://' + location.hostname + ':4224/api/v1/config/' + props.system,
+    const address = process.env.NEXT_PUBLIC_API_SERVER_ADDRESS;
+    const {data, error, isLoading} = useSWR('https://' + address + ':4224/api/v1/config/' + props.system,
                                             async (url) => {
                                                 return fetch(url, {method: 'GET'})
                                                 .then(res => res.json());

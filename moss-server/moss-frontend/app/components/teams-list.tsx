@@ -9,7 +9,8 @@ interface Team {
 
 export function TeamsList() {
     // const {data, error, isLoading} =  useSWR('https://' + location.hostname + ':4224/api/v1/teams',
-    const {data, error, isLoading} =  useSWR('https://' + location.hostname + ':4224/api/v1/teams',
+    const address = process.env.NEXT_PUBLIC_API_SERVER_ADDRESS;
+    const {data, error, isLoading} =  useSWR('https://' + address + ':4224/api/v1/teams',
                                             async (url) => {
                                                 return fetch(url, {method: 'GET'})
                                                 .then(res => res.json());
