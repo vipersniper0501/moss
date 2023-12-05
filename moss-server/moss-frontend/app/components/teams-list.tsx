@@ -1,12 +1,14 @@
 import useSWR from 'swr';
 import styles from '../styles/page.module.scss';
 
+
 interface Team {
     team_id: number;
     name: string;
 }
 
 export function TeamsList() {
+    // const {data, error, isLoading} =  useSWR('https://' + location.hostname + ':4224/api/v1/teams',
     const {data, error, isLoading} =  useSWR('https://' + location.hostname + ':4224/api/v1/teams',
                                             async (url) => {
                                                 return fetch(url, {method: 'GET'})
