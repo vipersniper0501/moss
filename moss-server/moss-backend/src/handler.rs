@@ -494,5 +494,6 @@ pub async fn get_systems(app_data: web::Data<AppState>) -> impl Responder {
 
 #[get("/api/v1/test_response")]
 pub async fn test_response() -> impl Responder {
+    println!("GET test_response");
     HttpResponse::Ok().body("Test response from Moss server backend!")
 }

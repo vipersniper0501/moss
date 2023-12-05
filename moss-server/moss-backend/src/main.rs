@@ -3,6 +3,7 @@ use actix_cors::Cors;
 use actix_web::{web, App,HttpServer, http::header};
 use dotenv::dotenv;
 use sqlx::mysql::MySqlPool;
+use colored::Colorize;
 
 use rustls::{Certificate, PrivateKey, ServerConfig};
 use rustls_pemfile::{certs, pkcs8_private_keys};
@@ -82,16 +83,17 @@ async fn main() -> std::io::Result<()> {
     
     dotenv().ok();
 
+    let warn = "Warning:".red();
     let database_url = std::env::var("DATABASE_URL")
         .expect("Could not find mysql database url in .env file {DATABASE_URL=\"my_database_url_here\"}");
 
     if database_url.contains("root") {
-        println!("Warning: It would be a smart idea to change the user from \
-            root to some other user with your database.");
+        println!("{} It would be a smart idea to change the user from \
+            root to some other user with your database.", warn);
     }
     if database_url.contains("password") {
-        println!("Warning: It would be wise to change the default password \
-            for the database from password!");
+        println!("{} It would be wise to change the default password \
+            for the database from password!", warn);
     }
 
     // MySQL database setup
@@ -130,7 +132,8 @@ async fn main() -> std::io::Result<()> {
     let unsecure_flag: bool = args.contains(&uflag);
 
     if unsecure_flag {
-        println!("Listening on http://127.0.0.1:4224");
+        let url = "http://127.0.0.1:4224".green();
+        println!("Listening on {}", url);
         HttpServer::new(move || {
             let xpool = xpool.clone();
             let cors = Cors::default()
@@ -151,12 +154,13 @@ async fn main() -> std::io::Result<()> {
     else {
         let config = load_rustls_config();
 
-        println!("Listening on https://127.0.0.1:4224");
+        let url = "https://127.0.0.1:4224".green();
+        println!("Listening on {}", url);
         HttpServer::new(move || {
             let xpool = xpool.clone();
+            // let cors = Cors::permissive();
             let cors = Cors::default()
-                        // Allows connection from local only frontend
-                        // Need to figure out way to accept from other server locations...
+                        // .allowed_origin("*")
                         .allow_any_origin()
                         .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
                         .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
