@@ -1,5 +1,5 @@
 'use client';
-import { TeamsList } from './components/teams-list';
+import { TeamsList } from './teams-list';
 import styles from './styles/page.module.scss'
 
 

@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import styles from '../styles/page.module.scss';
+import styles from './styles/page.module.scss';
 
 
 interface Team {
@@ -27,6 +27,7 @@ export function TeamsList() {
         {data.map((val: Team, index: number) => (
                 <div key={index} className={styles.team}>
                     <p>{val.name}</p>
+                    <p>Connected Agents:</p>
                 </div>
         ))}
         </div>
