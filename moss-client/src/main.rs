@@ -37,7 +37,7 @@ fn remote_mode(address: &str, teamid: String) {
     println!("\nAddress: {}", address);
 
     // Build url
-    let mut url: String = "http://".to_owned();
+    let mut url: String = "https://".to_owned();
     url.push_str(address);
     url.push_str("/api/v1/config/");
     url.push_str(host);
@@ -63,7 +63,7 @@ fn remote_mode(address: &str, teamid: String) {
         let result_data: MossResults = perform_checks(&config_data);
 
         // Build the url
-        let mut url = "http://".to_owned();
+        let mut url = "https://".to_owned();
         url.push_str(address);
         url.push_str("/api/v1/results/");
         url.push_str(teamid.as_str());
